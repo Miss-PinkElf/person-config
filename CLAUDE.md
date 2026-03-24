@@ -6,6 +6,7 @@
 4. 如果网页抓取失败，再根据场景考虑其它工具(agent-broswer)或人工说明失败原因
 5. claude-code-guide这个别随便使用，使用前，向我确认，我同意后再使用
 6. 产出的skill，文档，PRD，系分，或者openspec，superspec，superpower，产出的文档，或者产出的plan文档，需要使用简体中文编写，不能使用英文，除非我要求使用
+7. 默认不使用plan模式，默认使用的是superspec，除非我要求使用plan模式
 
 ### 八荣八耻
 1. 以暗猜接口为耻，以认真查阅为荣

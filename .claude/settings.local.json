@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/superspec\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/session-handoff/assets/templates\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/session-handoff/references/examples\")",
+      "Bash(cp -r \"E:/Learn/Vs/Code/person-config/.claude/skills/superspec/assets\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/superspec/\")",
+      "Bash(cp -r \"E:/Learn/Vs/Code/person-config/.claude/skills/superspec/skills\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/superspec/\")",
+      "Bash(cp -r \"E:/Learn/Vs/Code/person-config/.claude/skills/superspec/references\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/superspec/\")",
+      "Bash(cp \"E:/Learn/Vs/Code/person-config/.claude/skills/superspec/SKILL.zh-CN.md\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/superspec/SKILL.md\")"
+    ]
+  }
+}

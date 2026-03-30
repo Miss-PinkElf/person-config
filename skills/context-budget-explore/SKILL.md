@@ -2,7 +2,7 @@
 name: context-budget-explore
 description: |
   探索工作流管理器，用于长期探索、质检工作流、agent 闭环、迭代优化等场景，解决上下文过长导致的费用高、速度慢问题。
-  外层管理 workflow/todolist + 经验沉淀，内层通过 superspec 走开发流程，达到上下文阈值时自动触发 session-handoff 生成交接文档，支持跨对话续接。
+  外层管理 workflow/todolist + 经验沉淀，内层通过 spark-workflow 走开发流程，达到上下文阈值时自动触发 session-handoff 生成交接文档，支持跨对话续接。
   当用户要做以下事情时，积极触发本 skill：
   - 探索性工作（质检工作流、agent 闭环、迭代优化、方案对比）
   - 维护 todolist/workflow、记录进度、沉淀经验
@@ -51,7 +51,7 @@ allowed-tools:
 │  职责：workflow 管理 / 经验沉淀 / 上下文预算     │
 │                                              │
 │  ┌────────────────────────────────────┐      │
-│  │  superspec（内层流程引擎）            │      │
+│  │  spark-workflow（内层流程引擎）            │      │
 │  │  职责：具体任务走 propose → apply     │      │
 │  │  每完成一个迭代 → 自动回报外层         │      │
 │  └────────────────────────────────────┘      │
@@ -65,7 +65,7 @@ allowed-tools:
 ```
 
 - **外层**负责全局进度、经验沉淀、上下文预算
-- **内层 superspec**负责每个具体开发任务的流程（classify → align → propose → apply → verify）
+- **内层 spark-workflow**负责每个具体开发任务的流程（classify → align → propose → apply → verify）
 - **session-handoff**在上下文接近极限时自动生成交接文档
 
 ## 四层记忆模型
@@ -102,8 +102,8 @@ allowed-tools:
 ```
 ┌→ 选择子目标（从 TaskList 取下一个）
 │
-├→ 使用 superspec 执行
-│   - 如果是开发任务 → superspec 的 propose → apply → verify
+├→ 使用 spark-workflow 执行
+│   - 如果是开发任务 → spark-workflow 的 propose → apply → verify
 │   - 如果是探索任务 → 调研 → 总结 → 记录
 │
 ├→ 迭代回报（每完成一轮自动执行）
@@ -222,7 +222,7 @@ Checkpoint 输出格式：
 
 ### 何时沉淀
 
-- 每完成一个 superspec 的 apply → verify 周期
+- 每完成一个 spark-workflow 的 apply → verify 周期
 - 每次 debug 成功解决问题后
 - 每次方案对比做出选择后
 - 每次 checkpoint 时
@@ -232,21 +232,21 @@ Checkpoint 输出格式：
 - 每次开始新迭代前，快速浏览 learnings.md，避免重复踩坑
 - 如果某个经验被反复引用（3次以上），建议用户考虑将其固化为规范或 skill
 
-## 与 superspec 的集成
+## 与 spark-workflow 的集成
 
 当内层任务需要走开发流程时：
 
 1. **外层** 选定子目标，创建任务上下文
-2. **调用 superspec**：`/superspec` 走标准流程
+2. **调用 spark-workflow**：`/spark-workflow` 走标准流程
    - classify → align → propose → apply → verify
-3. **superspec 完成后**，回到外层：
+3. **spark-workflow 完成后**，回到外层：
    - 外层收集本轮产出
    - 更新 state.md
    - 追加 learnings.md
    - 检查上下文预算
    - 决定下一个子目标
 
-关键点：superspec 负责"怎么做好这个具体任务"，外层负责"做哪个任务、进度如何、学到了什么"。
+关键点：spark-workflow 负责"怎么做好这个具体任务"，外层负责"做哪个任务、进度如何、学到了什么"。
 ## 与 session-handoff 的集成
 
 触发条件（满足任一）：
@@ -405,7 +405,7 @@ Checkpoint 输出格式：
 响应：
 1. 创建 TaskList：[定义质检规则] → [实现检测逻辑] → [测试验证] → [优化调整] → [沉淀经验]
 2. 初始化 workflow.md、state.md、learnings.md
-3. 第一个任务用 superspec 走流程
+3. 第一个任务用 spark-workflow 走流程
 4. 每完成一轮：更新 state + 追加 learnings
 5. 上下文变长时：checkpoint → 必要时 session-handoff
 

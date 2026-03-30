@@ -139,7 +139,7 @@
 
 ### `spec/`
 
-内置 superspec 产物目录：
+内置 spark-workflow 产物目录：
 
 - `proposal.md`
 - `design.md`

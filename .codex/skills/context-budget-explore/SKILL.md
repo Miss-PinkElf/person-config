@@ -25,16 +25,16 @@ allowed-tools:
 
 ## 核心定位
 
-这个 skill 是一个位于 superspec 外层的 mission/workflow 管理器。
+这个 skill 是一个位于 spark-workflow 外层的 mission/workflow 管理器。
 
 它负责：
 
 1. 管理任务全生命周期，而不是只盯当前一轮对话
 2. 把需求、探索、实施、验证、交接过程沉淀到仓库根目录 `.explore/`
-3. 在需要时调用内置 `skills/superspec/SKILL.md` 处理具体子任务
+3. 在需要时调用内置 `skills/spark-workflow/SKILL.md` 处理具体子任务
 4. 在上下文过长、阶段结束或准备暂停时调用内置 `skills/session-handoff/SKILL.md` 生成交接
 
-一句话：**superspec 负责把子任务做对，本 skill 负责让整件事有过程、有记录、有恢复点。**
+一句话：**spark-workflow 负责把子任务做对，本 skill 负责让整件事有过程、有记录、有恢复点。**
 
 ## 适用范围
 
@@ -118,7 +118,7 @@ allowed-tools:
 
 读取：
 
-- `skills/superspec/SKILL.md`
+- `skills/spark-workflow/SKILL.md`
 
 走它的探索/对齐模式，但外层仍要更新：
 
@@ -131,7 +131,7 @@ allowed-tools:
 
 读取：
 
-- `skills/superspec/SKILL.md`
+- `skills/spark-workflow/SKILL.md`
 
 把产物写到当前 mission 的 `spec/` 目录。
 
@@ -139,7 +139,7 @@ allowed-tools:
 
 读取：
 
-- `skills/superspec/SKILL.md`
+- `skills/spark-workflow/SKILL.md`
 
 按 `spec/tasks.md` 推进实现与验证。
 
@@ -187,7 +187,7 @@ allowed-tools:
 选择下一个子目标
 -> 读取 state / 最新 checkpoint / 最新 handoff / learnings
 -> 选择内层路由（探索、提案、实施、验证）
--> 读取 skills/superspec/SKILL.md 执行
+-> 读取 skills/spark-workflow/SKILL.md 执行
 -> 外层回写 workflow / state / decision-log / learnings
 -> 判断是否要 checkpoint 或 handoff
 -> 进入下一轮
@@ -276,7 +276,7 @@ checkpoint 统一追加到：
 
 1. 默认工作区就是仓库根目录 `.explore/`
 2. 一个 mission 可以有多次 handoff，必须放在该 mission 的 `handoffs/` 目录
-3. 主 skill 不依赖外部 superspec 或外部 session-handoff，只读取当前 skill 目录内子 skills
+3. 主 skill 不依赖外部 spark-workflow 或外部 session-handoff，只读取当前 skill 目录内子 skills
 4. 日常输出保持短，不要每轮都写大总结
 5. 已存在持久化文件时优先更新，而不是不断新建同类文件
 6. 如果记录与当前仓库事实冲突，以当前事实为准，并回写修正
@@ -303,7 +303,7 @@ checkpoint 统一追加到：
 3. 当前 mission 的 `workflow.md`
 4. 当前 mission 的 `learnings.md`
 5. 当前 mission 的 `handoffs/index.md`（如存在）
-6. `skills/superspec/SKILL.md` 或 `skills/session-handoff/SKILL.md`
+6. `skills/spark-workflow/SKILL.md` 或 `skills/session-handoff/SKILL.md`
 
 ## 运作良好的标志
 
@@ -312,4 +312,4 @@ checkpoint 统一追加到：
 - 决策和经验可以从文件中快速查到
 - 一个 mission 可以积累多份 handoff，而不是只保留一份摘要
 - 即使换环境，仍可以通过 `.explore/` 目录继续工作
-- 整个过程像“有状态的 superspec 外层管理器”，而不是一次性聊天
+- 整个过程像“有状态的 spark-workflow 外层管理器”，而不是一次性聊天

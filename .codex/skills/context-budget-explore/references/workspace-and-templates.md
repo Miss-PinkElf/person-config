@@ -35,6 +35,7 @@
 ├── decision-log.md
 ├── learnings.md
 ├── checkpoints.md
+├── checkpoints-archive.md
 ├── session-tasks.md
 ├── spec/
 │   ├── proposal.md
@@ -59,6 +60,7 @@
    - `decision-log.md`
    - `learnings.md`
    - `checkpoints.md`
+   - `checkpoints-archive.md`
    - `session-tasks.md`
    - `handoffs/index.md`
 4. 如果用户是在续接旧任务，先读取已有文件，除非必要不要覆盖
@@ -90,13 +92,10 @@
 
 ### `decision-log.md`
 
-记录会影响后续判断的决策：
+记录会影响后续判断的决策，分成两块：
 
-- 背景
-- 选择
-- 原因
-- 放弃的方案
-- 影响
+- 历史决策摘要：只放早期决策的一行摘要
+- 完整记录：保留最近 5 条完整决策
 
 ### `learnings.md`
 
@@ -111,7 +110,7 @@
 
 ### `checkpoints.md`
 
-按时间顺序追加 checkpoint。
+按时间顺序追加 checkpoint，但只保留最近 3 个完整 checkpoint。
 
 每条 checkpoint 至少包含：
 
@@ -122,6 +121,14 @@
 - 待解决问题
 - 下一步
 - 可以从活跃上下文移除的内容
+
+更早的 checkpoint 滚动归档到 `checkpoints-archive.md`。
+
+### `checkpoints-archive.md`
+
+保存由滚动窗口归档的旧 checkpoint。
+
+默认不主动读取，只在需要回溯历史时按需查看。
 
 ### `session-tasks.md`
 
@@ -215,6 +222,12 @@
 
 ```md
 # 决策日志
+
+## 历史决策摘要
+
+（当完整记录超过 5 条时，旧决策压缩到这里）
+
+## 完整记录
 ```
 
 ### `learnings.md`
@@ -227,6 +240,14 @@
 
 ```md
 # Checkpoints
+```
+
+### `checkpoints-archive.md`
+
+```md
+# Checkpoints 归档
+
+（由滚动窗口自动归档的旧 checkpoint，按需查看，恢复时不主动读取）
 ```
 
 ### `handoffs/index.md`
@@ -248,16 +269,23 @@
 - 做了关键选择后更新 `decision-log.md`
 - 形成可复用经验后更新 `learnings.md`
 - 阶段切换或准备暂停时更新 `checkpoints.md` 或 `handoffs/`
+- `checkpoints.md` 只保留最近 3 个完整 checkpoint，旧内容滚到 `checkpoints-archive.md`
+- `decision-log.md` 只保留最近 5 条完整决策，更早内容压缩到摘要区
 
 ## 恢复策略
 
 恢复任务时按这个顺序读取：
 
 1. `state.md`
-2. `workflow.md`
-3. `learnings.md`
-4. `handoffs/index.md`
-5. 最新 handoff
-6. `spec/` 中相关 artifact
+2. 最新 handoff（只读最新 1 份，不默认读多份）
+3. `workflow.md`（仅在 `state.md` 信息不足时）
+4. `learnings.md`（按需）
+5. `spec/` 中相关 artifact（按需）
+
+不主动读取的文件：
+
+- `handoffs/index.md`（只在最新 handoff 信息不足时读取）
+- `checkpoints-archive.md`（只在需要回溯历史时读取）
+- `decision-log.md` 的历史摘要区
 
 如果文件内容与当前仓库状态冲突，以当前代码和仓库状态为准，再回写修正记录。

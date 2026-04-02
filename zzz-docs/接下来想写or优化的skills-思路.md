@@ -9,3 +9,10 @@ time
 加上日志，还有那个长上下文skills，不就是，AI工程？
 生成系分，自己补充细节
 或者说是origin+prd---->系分/plan
+
+说不定可以参考的项目：
+- https://github.com/thedotmack/claude-mem
+- https://github.com/Fission-AI/OpenSpec
+- 我自己的.claude\skills\context-budget-explore这个skills
+- https://github.com/obra/superpowers
+- https://github.com/github/spec-kit

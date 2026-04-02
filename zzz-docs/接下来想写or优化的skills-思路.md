@@ -17,3 +17,28 @@ time
 - 我自己的.claude\skills\context-budget-explore这个skills
 - https://github.com/obra/superpowers
 - https://github.com/github/spec-kit
+
+## 当前结论（2026-04-02）
+
+- `context-budget-explore` 现在更像 mission 层 skill，适合单个长任务、单个需求、单个 change。
+- 如果一个项目里会反复出现多个需求、多个 mission、跨任务复用经验和恢复历史，就应该再加一个 project 层 skill。
+- 这个新 skill 不应该取代 `context-budget-explore`，而应该在它外层做 orchestration / registry / retrieval。
+
+### 新 skill 建议职责
+
+- 管理一个项目下的多个 mission，而不是只管理一个 `.explore/<mission>/`
+- 维护项目级 registry / timeline / current state / mission map
+- 决定当前是新开 mission，还是续接已有 mission
+- 需要进入单个任务时，再调用 `context-budget-explore`
+
+### 推荐分层
+
+1. project 层 skill：项目级 orchestration / registry / retrieval
+2. `context-budget-explore`：单个 mission 的长期记录与恢复
+3. `spark-workflow` / `session-handoff`：具体执行与暂停恢复
+
+### 下一步
+
+- 先定新 skill 的名字、description 和触发条件
+- 再定项目级目录结构和真相源文件
+- 最后决定先写设计文档，还是直接起草 `SKILL.md`

@@ -1,10 +1,11 @@
 1. 全程使用简体中文。
-2. 完成修改后，先询问我是否需要提交；未经允许不得提交代码。
-3. 进行探索、记录与流程推进时，使用 `context-budget-explore`，并按需更新文档与 `decision-log.md`。
-4. 进入 `context-budget-explore` / `spark-workflow` 流程时，先进行必要的头脑风暴与讨论。
-5. 产出的 `spark-workflow`、`handoff`、`openspec`、skills 等文档默认使用简体中文，禁止英文。
-6. 如需提交，commit message 使用中文。
-7. 本仓库内的文件路径一律使用相对路径。
+2. 在一个需求开始之前，必须给出你的plan或者思路，我允许我再开始修改
+3. 完成修改后，先询问我是否需要提交；未经允许不得提交代码。
+4. 进行探索、记录与流程推进时，使用 `context-budget-explore`，并按需更新文档与 `decision-log.md`。
+5. 进入 `context-budget-explore` / `spark-workflow` 流程时，先进行必要的头脑风暴与讨论。
+6. 产出的 `spark-workflow`、`handoff`、`openspec`、skills 等文档默认使用简体中文，禁止英文。
+7. 如需提交，commit message 使用中文。
+8. 本仓库内的文件路径一律使用相对路径。
 ## 行为准则（八荣八耻）
 
 1. 以暗猜接口为耻，以认真查阅为荣。

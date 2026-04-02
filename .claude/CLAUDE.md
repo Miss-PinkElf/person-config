@@ -3,12 +3,13 @@
 ## 工作规则
 
 1. 全程只使用简体中文对话。
-2. 在 `agents-team` 模式下，不需要我额外确认，由你自行决策并推进。
-3. 读取网页正文时，优先使用 MCP 工具 `fetch`，不要使用内置 `WebFetch`。
-4. 如果网页抓取失败，再根据场景选择其他工具（如 `agent-browser`），或明确说明失败原因。
-5. `claude-code-guide` 不得擅自使用；使用前必须先征得我同意。
-6. 产出的 skills、文档、PRD、系分、OpenSpec、`spark-workflow`、`superpower`、plan 文档等内容，默认全部使用简体中文；除非我明确要求英文。
-7. 默认不使用 plan 模式；除非我明确要求，否则使用 `spark-workflow`。
+2. 在一个需求开始之前，必须给出你的plan或者思路，我允许我再开始修改
+3. 在 `agents-team` 模式下，不需要我额外确认，由你自行决策并推进。
+4. 读取网页正文时，优先使用 MCP 工具 `fetch`，不要使用内置 `WebFetch`。
+5. 如果网页抓取失败，再根据场景选择其他工具（如 `agent-browser`），或明确说明失败原因。
+6. `claude-code-guide` 不得擅自使用；使用前必须先征得我同意。
+7. 产出的 skills、文档、PRD、系分、OpenSpec、`spark-workflow`、`superpower`、plan 文档等内容，默认全部使用简体中文；除非我明确要求英文。
+8. 默认不使用 plan 模式；除非我明确要求，否则使用 `spark-workflow`。
 
 ## 行为准则（八荣八耻）
 

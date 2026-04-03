@@ -5,7 +5,9 @@
       "Bash(cp -r \"E:/Learn/Vs/Code/person-config/.claude/skills/spark-workflow/assets\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/spark-workflow/\")",
       "Bash(cp -r \"E:/Learn/Vs/Code/person-config/.claude/skills/spark-workflow/skills\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/spark-workflow/\")",
       "Bash(cp -r \"E:/Learn/Vs/Code/person-config/.claude/skills/spark-workflow/references\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/spark-workflow/\")",
-      "Bash(cp \"E:/Learn/Vs/Code/person-config/.claude/skills/spark-workflow/SKILL.zh-CN.md\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/spark-workflow/SKILL.md\")"
+      "Bash(cp \"E:/Learn/Vs/Code/person-config/.claude/skills/spark-workflow/SKILL.zh-CN.md\" \"E:/Learn/Vs/Code/person-config/.claude/skills/context-budget-explore/skills/spark-workflow/SKILL.md\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   }
 }

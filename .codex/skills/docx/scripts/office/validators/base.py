@@ -760,7 +760,9 @@ class BaseSchemaValidator:
                 )
                 schema = lxml.etree.XMLSchema(xsd_doc)
 
-            with open(xml_file, "r") as f:
+            # Read XML as bytes so the parser honors the document's own
+            # encoding declaration instead of Windows' locale default.
+            with open(xml_file, "rb") as f:
                 xml_doc = lxml.etree.parse(f)
 
             xml_doc, _ = self._remove_template_tags_from_text_nodes(xml_doc)

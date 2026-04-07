@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Skill(context-budget-explore)",
+      "Skill(codex:setup)",
+      "Bash(node:*)",
+      "Skill(codex:rescue)",
+      "Bash(gh:*)",
+      "Bash(git:*)"
+    ]
+  }
+}

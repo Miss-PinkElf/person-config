@@ -18,6 +18,6 @@
 
 你可以参考openspec和sueprpower的所有skills,我也是参考这个的
 openspec：https://github.com/Fission-AI/OpenSpec
-本地在 这个文件夹下面都是openspec的skills
+本地在 这个文件夹下面都是openspec的skills:D:\Users\Mobius\Desktop\mine\AAA-code\superpowers\.codex\skills
 sueprpower：https://github.com/obra/superpowers
-本地在：superpowers/skills
+本地在：:D:\Users\Mobius\Desktop\mine\AAA-code\superpowers\skills

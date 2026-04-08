@@ -1,40 +1,70 @@
 ---
 name: executing-plans
-description: Use when you have a written implementation plan to execute in a separate session with review checkpoints
+description: Use when there is already a written implementation plan and the next job is to execute it carefully with checkpoints, verification, and blocker handling. Trigger for prompts like "implement this plan", "continue from the plan", or "carry out the roadmap".
 ---
 
 # Executing Plans
 
-## Overview
-
-Load plan, review critically, execute all tasks, report when complete.
+Execute a written implementation plan carefully, transparently, and with strong verification.
 
 **Announce at start:** "I'm using the executing-plans skill to implement this plan."
 
-**Note:** Tell your human partner that Superpowers works much better with access to subagents. The quality of its work will be significantly higher if run on a platform with subagent support (such as Claude Code or Codex). If subagents are available, use superpowers:subagent-driven-development instead of this skill.
+## Core rule
 
-## The Process
+Do not blindly trust the plan just because it is written down. Review it first, then execute it task by task.
+
+## Workflow
 
 ### Step 1: Load and Review Plan
-1. Read plan file
-2. Review critically - identify any questions or concerns about the plan
-3. If concerns: Raise them with your human partner before starting
-4. If no concerns: Create TodoWrite and proceed
+
+1. Read the plan file.
+2. Check for:
+   - unclear steps
+   - impossible sequencing
+   - missing dependencies
+   - risky assumptions
+   - missing verification
+3. If the plan has material problems, stop and raise them before coding.
+4. If the plan is usable, create a task tracker and begin execution.
 
 ### Step 2: Execute Tasks
 
-For each task:
-1. Mark as in_progress
-2. Follow each step exactly (plan has bite-sized steps)
-3. Run verifications as specified
-4. Mark as completed
+For each task in order:
 
-### Step 3: Complete Development
+1. Mark it `in_progress`.
+2. Follow the planned steps closely, but keep thinking.
+3. If a step is underspecified, choose the smallest sensible action that preserves the plan's intent.
+4. Run the task-level verification before marking it done.
+5. Mark it completed only when the expected success signal is real, not assumed.
+6. Report progress at meaningful checkpoints instead of disappearing for a long time.
 
-After all tasks complete and verified:
-- Announce: "I'm using the finishing-a-development-branch skill to complete this work."
-- **REQUIRED SUB-SKILL:** Use superpowers:finishing-a-development-branch
-- Follow that skill to verify tests, present options, execute choice
+### Step 3: Handle blockers the right way
+
+Stop and surface the issue when:
+
+- the plan conflicts with the codebase
+- a dependency is missing
+- repeated verification keeps failing
+- the next step would require guessing at an important design decision
+- the plan needs to be amended, not merely interpreted
+
+When blocked, report:
+
+1. what you were trying to do
+2. what happened
+3. what you checked
+4. the smallest next options
+
+### Step 4: Finish cleanly
+
+After all tasks are complete:
+
+1. Run the final verification set for the changed area.
+2. Summarize:
+   - changed files
+   - checks/tests run
+   - remaining risks or follow-ups
+3. If the user wants commit help, suggest a commit message or perform the commit only if explicitly requested.
 
 ## When to Stop and Ask for Help
 
@@ -55,16 +85,10 @@ After all tasks complete and verified:
 **Don't force through blockers** - stop and ask.
 
 ## Remember
-- Review plan critically first
-- Follow plan steps exactly
-- Don't skip verifications
-- Reference skills when plan says to
-- Stop when blocked, don't guess
-- Never start implementation on main/master branch without explicit user consent
-
-## Integration
-
-**Required workflow skills:**
-- **superpowers:using-git-worktrees** - REQUIRED: Set up isolated workspace before starting
-- **superpowers:writing-plans** - Creates the plan this skill executes
-- **superpowers:finishing-a-development-branch** - Complete development after all tasks
+- Review first, then execute
+- Follow the plan closely, but do not turn off judgment
+- Don't skip verification
+- Update visible progress as you go
+- Stop when blocked; don't invent facts
+- If the plan is no longer the right plan, say so explicitly
+- Never do risky branch or git actions unless the user asked for them

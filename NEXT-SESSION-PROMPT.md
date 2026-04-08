@@ -1,47 +1,65 @@
 # Next Session Prompt
 
-请继续当前关于 `codex-plugin-cc` / Codex 代理 skill / OpenClaw 验证的任务，并直接基于仓库中的记录继续，不要从头重复论证“能不能完全替代 Claude Code 内置 `WebSearch` / `WebFetch`”。这个结论已经有了。
+请继续当前关于 `devflow` skill 优化与验证的任务，并直接基于仓库中的记录继续，不要重新从“原始需求是什么”“为什么不继续用 `context-budget-explore`”开始讨论。这些结论已经沉淀好了。
 
 先按这个顺序读取：
 
-1. `.explore/codex-plugin-cc-eval/state.md`
-2. `.explore/codex-plugin-cc-eval/handoffs/index.md`
-3. `.explore/codex-plugin-cc-eval/handoffs/2026-04-07-003-rest-ready.md`
-4. `.explore/codex-plugin-cc-eval/decision-log.md`
-5. `.explore/codex-plugin-cc-eval/learnings.md`
+1. `.explore/skill-devflow-optimization/state.md`
+2. `.explore/skill-devflow-optimization/handoffs/2026-04-09-001-rest-ready.md`
+3. `docs/superpowers/specs/2026-04-09-devflow-design.md`
+4. `docs/superpowers/plans/2026-04-09-devflow-implementation.md`
+5. `.codex/skills/devflow/SKILL.md`
 
 当前已确认事实：
 
-- 本地 Codex companion/setup 曾返回 `ready: true`，Node/npm/Codex CLI/认证前提基本可用。
-- `codex-plugin-cc` 更像 Claude Code → Codex 的任务委托桥接层，不是内置工具替换层。
-- 它不能等价替代 Claude Code 的 `WebSearch` / `WebFetch`，但可以作为旁路或部分替代方案。
-- 已落地两个最小代理 skill：
-  - `.claude/skills/codex-websearch-proxy/SKILL.md`
-  - `.claude/skills/codex-webfetch-proxy/SKILL.md`
-- 经过真实试跑，这两个 skill 当前都已经达到“先可用”的状态。
-- 当前阶段用户接受的标准是：优先先能成功返回结构化、可消费结果，不急于一开始就强卡严格最终 schema。
-- 已用 `codex-websearch-proxy` 实际搜索过 `openclaw 用法`，结果能命中 OpenClaw 官方文档与官方仓库。
-- 已用 `codex-webfetch-proxy` 抓取过 OpenClaw 官方安装页与入门页，并基于抓取结果给出过安装建议。
-- 期间出现过一次 `401 Unauthorized`，但后续复测已证明这不是两个 skill 文案本身必然导致的问题，更可能是底层 Codex 运行时、远端网关或会话令牌的偶发状态问题。
+- 新 skill 名称已经定为 `devflow`，并且这轮是“先新建，不迁移旧 skill”。
+- `devflow` 的定位已经定为“薄主入口 + 多子技能”。
+- 新工作区规则已经定为 `.devflow/<mission-slug>/`。
+- 路径规则已经收口为：
+  - 轻量路径
+  - 重型路径
+  - bug 路径
+  - resume 路径
+- 路径采用“系统先判断 + 用户可覆盖”。
+- 记录策略已经收口为“核心文件默认创建，阶段文件懒创建”。
+- `checkpoint` 与 `handoff` 的分工已经明确：
+  - checkpoint：阶段快照
+  - handoff：正式交接
+- `plan != spec` 已经被写成硬规则。
+- 简体中文设计 spec 已完成：
+  - `docs/superpowers/specs/2026-04-09-devflow-design.md`
+- 实现 plan 已完成：
+  - `docs/superpowers/plans/2026-04-09-devflow-implementation.md`
+- 第一版 `devflow` 已创建：
+  - `.codex/skills/devflow/SKILL.md`
+  - `.codex/skills/devflow/references/`
+  - `.codex/skills/devflow/assets/templates/`
+  - `.codex/skills/devflow/skills/`
+- 复制过来的 OpenSpec / Superpowers / session-handoff 子技能已经做过一轮路径和语义改写。
 
 下轮优先目标：
 
-1. 优先补一层 Claude 侧宽松 schema 兼容约定，尤其是 `webfetch_result` 中的变体字段：
-   - `content_markdown` / `content`
-   - `warnings` 可选或缺省
-   - `links` 等附加字段
-2. 再决定下一步是：
-   - 补脚本化 smoke test / 正式 eval
-   - 还是做一个统一总路由 skill
-3. 如果继续 OpenClaw 方向，可直接协助用户执行安装，并验证：
-   - `openclaw onboard --install-daemon`
-   - `openclaw gateway status`
-   - `openclaw dashboard`
-4. 如果再次遇到 401，不要先怀疑 skill 文案，优先排查底层 Codex 运行时 / 远端网关 / 令牌状态。
+1. 先做真实任务 smoke test，不要继续只停留在文档层。
+2. 至少选两个场景试跑 `devflow`：
+   - 一个轻量任务
+   - 一个中型或重型任务
+3. 重点验证：
+   - 路径判断是否合理
+   - `plan` / `spec` 落盘是否符合预期
+   - `state` / `checkpoint` / `handoff` 链路是否自洽
+4. 重点复查以下子技能在 `devflow` 语境下是否还残留旧假设：
+   - `.codex/skills/devflow/skills/openspec-explore/SKILL.md`
+   - `.codex/skills/devflow/skills/openspec-propose/SKILL.md`
+   - `.codex/skills/devflow/skills/session-handoff/SKILL.md`
+5. 如果验证中发现问题，优先修：
+   - 主入口规则
+   - 子技能路径引用
+   - 模板断链
+   不要急着做旧 skill 的迁移兼容层。
 
 输出要求：
 
-- 先给出简洁现状判断和下一步建议，再开始修改文件。
-- 不要重复大段可行性分析。
-- 优先更新 `.explore/codex-plugin-cc-eval/` 下的记录。
-- 如果提交代码，只提交和这两个 skill / `.explore` 记录 / `NEXT-SESSION-PROMPT.md` 相关的文件，不要误带 `.claude/settings.local.json`。
+- 先给出简洁现状判断和下一步建议，再开始改文件。
+- 不要重新重复完整需求讨论。
+- 优先更新 `.explore/skill-devflow-optimization/` 下的记录。
+- 如果要提交代码，只提交这轮 `devflow`、`.explore/skill-devflow-optimization/`、`docs/superpowers/plans/2026-04-09-devflow-implementation.md`、`NEXT-SESSION-PROMPT.md` 相关文件，不要误带其它无关改动。

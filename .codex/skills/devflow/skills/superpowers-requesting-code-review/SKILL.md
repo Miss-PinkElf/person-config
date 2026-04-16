@@ -3,25 +3,103 @@ name: superpowers-requesting-code-review
 description: 在 devflow 中，当完成一个有意义的实现里程碑后，发起面向 tasks、需求与最近 diff 的聚焦审查。
 ---
 
-# Superpowers Requesting Code Review（内置版）
+# Requesting Code Review
 
-在宣称完成之前，先 review。
+Dispatch a focused code-review subagent to catch issues before they cascade. The reviewer gets precisely crafted context for evaluation — never your session's history. This keeps the reviewer focused on the work product, not your thought process, and preserves your own context for continued work.
 
-## 输入
+**Core principle:** Review early, review often.
 
-- 改了什么
-- 本来应该做到什么
-- 完成了哪些任务或里程碑
-- 相关 diff 或文件集合
+## When to Request Review
 
-## 审查准备
+**Mandatory:**
+- After each task in subagent-driven development
+- After completing major feature
+- Before merge to main
 
-1. 总结已实现范围和 artifact 引用
-2. 只给 reviewer 最小但足够的代码与需求上下文
-3. 请 reviewer 从正确性、回归风险、遗漏场景、可维护性角度提意见
-4. 收到反馈后，先走 [../superpowers-receiving-code-review/SKILL.md](../superpowers-receiving-code-review/SKILL.md)，再决定怎么处理
+**Optional but valuable:**
+- When stuck (fresh perspective)
+- Before refactoring (baseline check)
+- After fixing complex bug
 
-## 约束
+## How to Request
 
-- 在有意义的里程碑后就可以 review，不一定非得等到最后
-- 不要发起没有需求上下文的空泛“看起来行不行”式审查
+**1. Get git SHAs:**
+```bash
+BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
+HEAD_SHA=$(git rev-parse HEAD)
+```
+
+**2. Dispatch code-reviewer subagent:**
+
+Use a worker subagent and fill the template at `code-reviewer.md`
+
+**Placeholders:**
+- `{WHAT_WAS_IMPLEMENTED}` - What you just built
+- `{PLAN_OR_REQUIREMENTS}` - What it should do
+- `{BASE_SHA}` - Starting commit
+- `{HEAD_SHA}` - Ending commit
+- `{DESCRIPTION}` - Brief summary
+
+**3. Act on feedback:**
+- Fix Critical issues immediately
+- Fix Important issues before proceeding
+- Note Minor issues for later
+- Push back if reviewer is wrong (with reasoning)
+
+## Example
+
+```
+[Just completed Task 2: Add verification function]
+
+You: Let me request code review before proceeding.
+
+BASE_SHA=$(git log --oneline | grep "Task 1" | head -1 | awk '{print $1}')
+HEAD_SHA=$(git rev-parse HEAD)
+
+[Dispatch code-reviewer subagent]
+  WHAT_WAS_IMPLEMENTED: Verification and repair functions for conversation index
+  PLAN_OR_REQUIREMENTS: Task 2 from .devflow/<mission-slug>/plans/deployment-plan.md
+  BASE_SHA: a7981ec
+  HEAD_SHA: 3df7661
+  DESCRIPTION: Added verifyIndex() and repairIndex() with 4 issue types
+
+[Subagent returns]:
+  Strengths: Clean architecture, real tests
+  Issues:
+    Important: Missing progress indicators
+    Minor: Magic number (100) for reporting interval
+  Assessment: Ready to proceed
+
+You: [Fix progress indicators]
+[Continue to Task 3]
+```
+
+## Integration with Workflows
+
+**Subagent-Driven Development:**
+- Review after EACH task
+- Catch issues before they compound
+- Fix before moving to next task
+
+**Executing Plans:**
+- Review after each batch (3 tasks)
+- Get feedback, apply, continue
+
+**Ad-Hoc Development:**
+- Review before merge
+- Review when stuck
+
+## Red Flags
+
+**Never:**
+- Skip review because "it's simple"
+- Ignore Critical issues
+- Proceed with unfixed Important issues
+- Argue with valid technical feedback
+
+**If reviewer wrong:**
+- Push back with technical reasoning
+- Show code/tests that prove it works
+- Request clarification
+
+See template at: `./code-reviewer.md`

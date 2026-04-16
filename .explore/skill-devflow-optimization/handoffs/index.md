@@ -2,16 +2,17 @@
 
 ## 最新 handoff
 
-- 文件：`2026-04-09-001-rest-ready.md`
+- 文件：`2026-04-16-002-rest-ready.md`
 - 阶段：Checkpoint / Handoff
-- 创建时间：2026-04-09
+- 创建时间：2026-04-16
 - 状态：active
 
 ## 历史记录
 
 | 编号 | 文件 | 阶段 | 状态 | 摘要 |
 | --- | --- | --- | --- | --- |
-| 001 | `2026-04-09-001-rest-ready.md` | Checkpoint / Handoff | active | `devflow` 第一版已创建，已写完记录与续接提示词，下一步建议做真实任务验证。 |
+| 001 | `2026-04-09-001-rest-ready.md` | Checkpoint / Handoff | superseded | `devflow` 第一版已创建，已写完记录与续接提示词，下一步建议做真实任务验证。 |
+| 002 | `2026-04-16-002-rest-ready.md` | Checkpoint / Handoff | active | `devflow` 已完成一轮职责边界收口，下一步应转入真实场景 smoke test 与最小 eval。 |
 
 ## 恢复建议
 

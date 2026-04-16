@@ -4,10 +4,12 @@
 
 ## 恢复前核验
 
-- [ ] 已完整读取 handoff 文档
 - [ ] 当前目录确实是目标项目
 - [ ] 能确认当前 mission 是正确的
+- [ ] 已读取 `state.md`
+- [ ] 已读取最近一次 checkpoint
 - [ ] 已查看 handoff 创建时间，知道上下文新旧程度
+- [ ] 如存在 handoff，已完整读取 handoff 文档
 
 ## 上下文核验
 
@@ -18,7 +20,6 @@
 
 ## 状态核验
 
-- [ ] 已读取 `state.md`
 - [ ] 已读取 `workflow.md`
 - [ ] 已读取必要的 `spec/` artifact
 - [ ] handoff 中提到的关键文件当前仍存在

@@ -17,6 +17,12 @@
 └── handoffs/
 ```
 
+推荐命名：
+
+- `plans/YYYY-MM-DD-<topic>-plan.md`
+- `plans/YYYY-MM-DD-<topic>-light-tasks.md`
+- `handoffs/YYYY-MM-DD-<seq>-<slug>.md`
+
 ## 默认创建与懒创建
 
 ### 默认创建
@@ -26,6 +32,15 @@ mission 初始化时立即创建：
 - `workflow.md`
 - `state.md`
 - `decision-log.md`
+
+初始化时建议立即填入：
+
+- 当前目标
+- 范围
+- 成功标准
+- 当前路径
+- 当前阶段
+- 下一步
 
 ### 按阶段懒创建
 
@@ -45,7 +60,7 @@ mission 初始化时立即创建：
 ## 模板使用时机
 
 - `workflow-template.md`
-  - mission 初始化
+  - mission 初始化；路径、阶段或里程碑变化时同步更新
 - `state-template.md`
   - mission 初始化，后续持续更新
 - `decision-log-template.md`
@@ -57,7 +72,7 @@ mission 初始化时立即创建：
 - `bug-log-template.md`
   - bug 路径进入调试后
 - `checkpoint-template.md`
-  - 阶段切换、里程碑、暂停前
+  - 阶段切换、里程碑、暂停前、Close 前
 - `handoff-template.md`
   - 暂停、跨对话、上下文过长、阶段性交接
 
@@ -70,6 +85,22 @@ mission 初始化时立即创建：
 - 把较旧条目搬到 `checkpoints-archive.md`
 - `checkpoints-archive.md` 不主动读取
 - 只有追历史时才打开
+
+建议流程：
+
+1. 先把新 checkpoint 追加到 `checkpoints.md`
+2. 如果条目数超过 3，搬走最旧条目
+3. 在 `state.md` 中记录最新 checkpoint 的主题或时间
+
+## Resume 读取建议
+
+恢复当前 mission 时，建议按以下顺序读取：
+
+1. `state.md`
+2. `checkpoints.md`
+3. 最新 `handoff`
+4. `workflow.md`
+5. `spec/` 或 `plans/`
 
 ## Spec 规则
 

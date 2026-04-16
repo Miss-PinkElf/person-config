@@ -1,11 +1,10 @@
 ---
 name: devflow
 description: |
-  长期开发任务主入口。适用于中大型开发、长任务推进、跨对话续接、过程记录、方案讨论、计划沉淀、bug 调试、handoff 交接。显式调用时直接使用；当任务涉及多阶段推进、需要记录决策与过程、或预计会跨多轮继续时，也应主动触发本 skill。
-  一旦进入本 skill，默认把任务过程沉淀到仓库根目录 `.devflow/<mission-slug>/`，并根据任务形态选择轻量路径、重型路径、bug 路径或 resume 路径。不要把记录当成附属说明，记录本身就是主流程的一部分。
+  长期开发任务主入口。只要任务会分阶段推进、预计跨多轮继续、需要先讨论再写 plan、需要记录决策/bug/checkpoint/handoff，或用户说“先梳理”“先讨论”“先写 plan”“保存进度”“继续上次”，都应优先使用它。不要把 devflow 当成收尾记录器；它必须在第一次真正推进前介入，并强制执行 Align -> Plan -> Spec/Tasks -> Apply -> Verify/Close。
 author: Codex
-version: 0.1.0
-date: 2026-04-09
+version: 0.2.0
+date: 2026-04-15
 ---
 
 # DevFlow
@@ -25,6 +24,29 @@ date: 2026-04-09
 一句话：
 
 **OpenSpec 管阶段推进，Superpowers 管思考质量，DevFlow 管主线记录、路径调度与恢复。**
+
+## 不可跳过的铁律
+
+以下规则是 `devflow` 的硬门禁，不是建议：
+
+1. `Align` 先于一切实现路径
+   - 用户说“直接做”“先写 plan”“先出 tasks”都不构成跳过对齐的许可
+   - 轻量任务也至少做 `Mini Align`
+2. `Plan` 先于 `Propose` 与 `Apply`
+   - `plan != spec`
+   - 没有落盘的 `plan`，不得进入正式 spec，也不得开始实现
+3. 没有任务定义，不进入 `Apply`
+   - 重型路径依赖 `spec/tasks.md`
+   - 轻量路径依赖轻量 `tasks`
+4. 重要阶段切换、里程碑、暂停与收尾都要写 `checkpoint`
+   - `checkpoints.md` 只保留最近 3 条
+   - 更旧内容搬到 `checkpoints-archive.md`
+5. 没有新鲜验证证据，不得宣称完成
+6. 首次进入 mission 时，必须先完成 `Mission Init`
+   - 至少创建并初始化 `workflow.md`、`state.md`、`decision-log.md`
+   - 没有初始化工作区，不进入 `Align`
+
+如果当前工作违反了这些规则，优先回退阶段，而不是继续往前冲。
 
 ## 适用场景
 
@@ -77,6 +99,24 @@ date: 2026-04-09
 - `session-tasks.md`
 - `handoffs/`
 
+只要 `devflow` 已经介入，**工作区文件比对话更可信**。  
+如果对话与工作区记录冲突，以当前仓库事实为准，再把差异回写记录。
+
+## 职责边界
+
+`devflow` 负责：
+
+- 判断路径与阶段
+- 建立并维护 mission 工作区
+- 规定记录、checkpoint、handoff、resume 的主线规则
+- 决定何时进入哪个子 skill
+
+`devflow` 不负责：
+
+- 重新定义 `openspec-*` 的生命周期内部规则
+- 重新定义 `superpowers-*` 的思考与质量方法论
+- 在外层重复书写子 skill 已经负责的细节
+
 ## 路径分类规则
 
 采用：**系统先判断 + 用户可覆盖**
@@ -99,7 +139,7 @@ date: 2026-04-09
 流程：
 
 ```text
-Mini Align -> Light Plan -> Light Tasks -> Apply -> Verify
+Mini Align -> Light Plan -> Light Tasks -> Apply -> Verify -> Close
 ```
 
 ### 重型路径
@@ -113,7 +153,7 @@ Mini Align -> Light Plan -> Light Tasks -> Apply -> Verify
 流程：
 
 ```text
-Align -> Plan -> proposal/design/tasks -> Apply -> Review/Verify
+Align -> Plan -> proposal/design/tasks -> Apply -> Review -> Verify -> Close
 ```
 
 ### bug 路径
@@ -128,7 +168,7 @@ Align -> Plan -> proposal/design/tasks -> Apply -> Review/Verify
 流程：
 
 ```text
-Classify -> Debugging -> bug-log -> Verify -> State Update
+Classify -> Debugging -> bug-log -> Verify -> Close
 ```
 
 ### resume 路径
@@ -142,15 +182,25 @@ Classify -> Debugging -> bug-log -> Verify -> State Update
 流程：
 
 ```text
-Read state -> Read latest handoff -> Reconfirm route -> Continue
+Read state -> Read latest checkpoint -> Read latest handoff(if any) -> Reconfirm route -> Align/Plan/Apply
 ```
+
+### 纯探索分支
+
+当任务仍处于“先聊清楚，不承诺方向，不开始实现”的状态时：
+
+```text
+Classify -> Explore -> Align
+```
+
+`Explore` 不是偷跑实现的通道，只是把纯讨论和正式对齐区分开。
 
 ## 主线流程
 
 DevFlow 主线为：
 
 ```text
-Classify -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
+Classify -> Mission Init -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
 ```
 
 关键约束：
@@ -159,8 +209,9 @@ Classify -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
 - `Plan` 不能静默省略
 - `plan != spec`
 - 没有任务定义不进入 `Apply`
-- 正常完成不强制 handoff
 - 每轮推进后至少更新 `state.md`
+- 每次重要阶段切换都应决定是否写 `checkpoint`
+- `Close` 不等于 mission 结束，它只表示当前轮次收束
 
 重型路径固定三件套：
 
@@ -173,17 +224,36 @@ Classify -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
 - 轻量 `plan`
 - 轻量 `tasks`
 
+## 阶段执行顺序
+
+| 阶段 | 外层职责 | 进入的子 skill |
+| --- | --- | --- |
+| `Classify` | 判断当前请求属于哪条路径与哪类阶段 | 无 |
+| `Mission Init` | 建立或校验最小工作区骨架 | 无 |
+| `Align` | 把任务送入正式对齐 | `superpowers-brainstorming` |
+| `Plan` | 把方向落成 plan | `superpowers-writing-plans` |
+| `Propose / Tasks` | 产出或更新 lifecycle artifacts | `openspec-propose` |
+| `Apply` | 按任务推进生命周期 | `openspec-apply-change` |
+| `Review / Verify` | 调用质量门禁子 skill 完成审查与验证 | `superpowers-requesting-code-review` / `superpowers-receiving-code-review` / `superpowers-verification-before-completion` |
+| `Close` | 更新状态，写 checkpoint，并决定是否 handoff | 无 |
+
+阶段内部细节由对应子 skill 负责；`devflow` 外层只负责调度、记录和恢复。
+
 ## 阶段门禁
 
 ### 对齐门禁
 
+- 没有完成 `Mission Init` 不进入 `Align`
 - 不允许跳过 Align 直接进入 Apply
-- 对齐结束后必须把结论落入 `plans/` 或轻量 plan
+- 用户要求“先写 plan”时，也必须先做 Align
+- 对齐结束后必须把结论转入 `Plan`
 
 ### 计划门禁
 
 - 重型路径必须写入 `plans/`
 - 轻量路径也必须有最小 plan 记录
+- plan 写完前，不得创建正式 artifact
+- 没有 plan，不进入正式实施
 
 ### 实施门禁
 
@@ -200,6 +270,8 @@ Classify -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
 
 - 宣称完成前必须进入 `superpowers-verification-before-completion`
 - 没有新鲜证据，不允许宣称完成
+- 阶段收尾前必须决定是否写 `checkpoint`
+- 暂停、上下文压缩、跨会话续接时才强制写 `handoff`
 
 ## 回退规则
 
@@ -219,13 +291,17 @@ Classify -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
 
 始终遵循：
 
+- mission 建立或恢复后，先校验 `workflow.md`、`state.md`、`decision-log.md`
 - 每轮推进后至少更新 `state.md`
+- 路径变化、阶段变化、里程碑调整后更新 `workflow.md`
 - 做出关键选择后更新 `decision-log.md`
-- 对齐与方案收敛后写 `plan`
+- 对齐确认后必须写 `plan`
 - 遇到 bug 时写 `bug-log.md`
-- 阶段切换或重要里程碑时写 `checkpoint`
+- 阶段切换、重要里程碑、暂停前、正式完成当前轮次时写 `checkpoint`
 - `checkpoints.md` 只保留最近 3 条，超出内容搬入 `checkpoints-archive.md`
 - 暂停、跨对话、上下文过长、阶段性交接时才生成 `handoff`
+
+不要把 `spec` 当成过程记录，不要把 `handoff` 当成 `state.md` 的替代品，也不要把“聊天里说过”当成已经落盘。
 
 ## 读取地图
 
@@ -239,6 +315,7 @@ Classify -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Verify -> Close
 进入具体动作时，按需读取：
 
 - 探索：`skills/openspec-explore/SKILL.md`
+- 计划：`skills/superpowers-writing-plans/SKILL.md`
 - 提案：`skills/openspec-propose/SKILL.md`
 - 实施：`skills/openspec-apply-change/SKILL.md`
 - 归档：`skills/openspec-archive-change/SKILL.md`

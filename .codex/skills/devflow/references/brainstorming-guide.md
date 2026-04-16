@@ -29,7 +29,8 @@
 - 是否真的只需要轻量 plan 与轻量 tasks
 - 有无明显风险会把任务升级成重型路径
 
-输出应短，但不能没有互动确认。
+输出应短，但不能没有互动确认。  
+**Mini Align 也必须先于 Plan。**
 
 ### 重型路径
 
@@ -63,9 +64,19 @@
 因此：
 
 - brainstorm 先于 spec
-- plan 先于重型 spec
+- plan 先于一切 spec 与一切实现
 - 不允许用 spec 代替 brainstorm 过程
 - 不允许把 brainstorm 结果只留在对话中而不落盘
+
+## “先写 plan” 的正确处理
+
+用户说“先写 plan”时，正确动作不是立刻写 plan，而是：
+
+1. 先做 `Align` 或 `Mini Align`
+2. 拿到用户确认的方向摘要
+3. 再进入 `Plan`
+
+否则写出来的 plan 通常只是未经确认的猜测。
 
 ## 路径判断时如何解释理由
 
@@ -85,5 +96,6 @@
 ## 禁令
 
 - 不允许跳过 Align 直接进入 Apply
+- 不允许跳过 Align 直接进入 Plan
 - 不允许把 brainstorm 结果只留在对话中而不落盘
 - 不允许在没有 plan 的情况下，把 spec 当作过程记录替代品

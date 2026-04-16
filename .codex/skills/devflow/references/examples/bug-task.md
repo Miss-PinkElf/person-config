@@ -17,7 +17,8 @@
 3. 写 `bug-log.md`
 4. 找到根因后实施修复
 5. 做验证
-6. 回写 `state.md`
+6. 写一个 `checkpoint`
+7. 回写 `state.md`
 
 ## 关键约束
 

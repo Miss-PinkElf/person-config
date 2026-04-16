@@ -17,28 +17,38 @@
   - `references/`
   - `assets/templates/`
   - `skills/` 中复用并改写后的 OpenSpec / Superpowers / session-handoff 子技能
-- 实现 plan 已写入 `docs/superpowers/plans/2026-04-09-devflow-implementation.md`，尚未单独提交。
+- `superpowers-*` 子技能已补到接近原版强度，并补齐了相关 prompt / reference 资源文件。
+- `openspec-*` 子技能已按“OpenSpec 管阶段推进”的原则收口，强调生命周期边界、进入条件、退出条件与回退点，不再扩张为质量方法论。
+- `devflow` 外层已做一轮收敛，重新强调“OpenSpec 管阶段推进，Superpowers 管思考质量，DevFlow 管主线记录、路径调度与恢复。”
+- `devflow` 内置 `session-handoff` 已改成恢复时优先读取 `state.md` 与最新 `checkpoint`，handoff 作为补充恢复入口。
 
 ## 工作假设
-- 当前第一版 `devflow` 已经足够进入下一轮真实任务验证。
-- 下一轮最有价值的工作不是继续堆文档，而是做一次真实触发 / 路由 / 记录链路验证。
-- 如果验证时发现问题，优先修正主入口规则与子技能引用，不急着做迁移兼容层。
+- 当前 `devflow` 已不适合继续大幅加厚文档，下一轮最有价值的工作是做真实任务 smoke test 与触发 / 路由验证。
+- 如果验证时发现问题，优先修正主入口规则、路径引用与子技能边界，不急着做迁移兼容层。
+- `skill-creator-cc` 视角下，当前版本已经进入“应该开始 eval，而不是继续纯手工改文案”的阶段。
 
 ## 待解决的问题
 - `devflow` 还没有经过真实任务 smoke test。
-- 复制过来的子技能虽然已做路径与语义改写，但还没逐个深度审校。
-- 旧 `context-budget-explore` 和新 `devflow` 的关系目前只在设计层明确，尚未做迁移策略。
-- 是否需要进一步压缩 `devflow/SKILL.md` 或拆更多参考文件，还没有经过实际使用验证。
+- 还没有做 `skill-creator-cc` 风格的最小 eval：包括 trigger eval 与 workflow eval。
+- `devflow` 与 `context-budget-explore` / `spark-workflow` 的触发边界还没有用真实 prompt 验证。
+- 旧 `context-budget-explore` 和新 `devflow` 的迁移关系仍未设计。
+- `context-budget-explore` 自己的内置 `session-handoff` 仍是旧的“优先读最新 handoff”逻辑，本轮未同步优化。
 
 ## 下一步
-- 先用一个小型任务和一个中型任务各走一遍 `devflow`，检查路径判断、plan/spec、记录与 handoff 是否符合预期。
-- 重点检查 `session-handoff`、`openspec-propose`、`openspec-explore` 在 `devflow` 语境下是否还有残留旧假设。
-- 如果链路稳定，再考虑是否提交第二轮优化，或开始设计旧 skill 的迁移方案。
+- 先按 `skill-creator-cc` 的思路，准备一组最小高价值 eval prompt，覆盖：
+  - 应该触发 `devflow`
+  - 不应该触发 `devflow`
+  - `devflow` 与 `context-budget-explore` / `spark-workflow` 的冲突边界
+- 用一个轻量任务、一个重型任务、一个 resume 场景各走一遍 `devflow`，检查：
+  - 路径判断
+  - Align -> Plan -> Propose / Apply 顺序
+  - `state` / `checkpoint` / `handoff` 链路
+- 若验证稳定，再决定是否继续优化其它主 skill，或开始设计迁移策略。
 
 ## 最新 handoff
-- `handoffs/2026-04-09-001-rest-ready.md`
+- `handoffs/2026-04-16-002-rest-ready.md`
 
 ## 最小活跃上下文摘要
-- 当前已经完成设计与第一版实现，不需要重新从需求讨论开始。
-- 当前最重要的是验证第一版 `devflow` 能不能在真实任务里稳定使用。
-- 本轮收尾的核心目标是把状态、风险、下一步和提示词全部写清楚，方便直接续接。
+- 当前已经不需要重新讨论 `devflow` 的基本定位；这一层已经收口。
+- 当前最重要的是停止继续加厚 skill 文档，转入真实场景验证与最小 eval。
+- 如果下轮继续修改，优先动的是验证数据、触发边界和真实 workflow，而不是再大段改写理论说明。

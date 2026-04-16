@@ -40,3 +40,24 @@
 - 备选方案：所有路径统一强制 `proposal.md + design.md + tasks.md`。
 - 原因：小任务如果也要求完整三件套，使用成本会过高，最终会导致 skill 被绕开。
 - 影响：`devflow` 明确区分轻量与重型路径，强调 `plan != spec`。
+
+### 2026-04-16-06
+
+- 决策：`superpowers-*` 子技能尽量贴近原版，只做最小路径与环境适配。
+- 备选方案：继续保留精简版子技能；完全中文重写。
+- 原因：当前问题主要不是“没有子技能”，而是“精简过度导致硬门禁与反模式丢失”；优先恢复原版强度更稳。
+- 影响：`superpowers-*` 相关 prompt / references 一并补齐，后续重点转向验证而非继续扩写。
+
+### 2026-04-16-07
+
+- 决策：`openspec-*` 只优化生命周期边界，不承担 `superpowers-*` 的思考质量职责。
+- 备选方案：继续给 `openspec-*` 加厚方法论；直接切到 OpenSpec CLI 模式。
+- 原因：`devflow` 的原始定位已经明确“OpenSpec 管阶段推进，Superpowers 管思考质量”；混职责会让体系重新变厚变乱。
+- 影响：`openspec-explore/propose/apply/archive` 增加了“只负责 / 不负责 / 进入条件 / 退出条件 / 回退与委派”的说明。
+
+### 2026-04-16-08
+
+- 决策：`devflow` 外层不再继续加厚，而是开始收敛回“调度器 + 记录器 + 恢复器”。
+- 备选方案：继续把更多阶段细节写进 `devflow/SKILL.md`。
+- 原因：外层如果继续膨胀，会与 `openspec-*`、`superpowers-*` 形成重复说明与职责漂移。
+- 影响：主 skill 增加了职责边界说明，阶段细节改成表格式调度说明，并把 `session-handoff` 恢复顺序改为先 `state/checkpoint` 后 `handoff`。

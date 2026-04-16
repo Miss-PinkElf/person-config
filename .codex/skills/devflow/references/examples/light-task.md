@@ -16,12 +16,15 @@
 2. 写轻量 plan，记录目标、范围、风险
 3. 写轻量 tasks
 4. 实施
-5. 验证并更新 `state.md`
+5. 验证
+6. 写一个收尾 `checkpoint`
+7. 更新 `state.md`
 
 ## 需要落盘的内容
 
 - 轻量 plan
 - 轻量 tasks
+- `checkpoints.md`
 - `state.md`
 
 若实施中发现影响范围扩大，再升级为重型路径。

@@ -13,7 +13,7 @@
 阶段流转：
 
 ```text
-Mini Align -> Light Plan -> Light Tasks -> Apply -> Verify
+Mission Init -> Mini Align -> Light Plan -> Light Tasks -> Apply -> Verify -> Close
 ```
 
 ### 重型路径
@@ -27,7 +27,7 @@ Mini Align -> Light Plan -> Light Tasks -> Apply -> Verify
 阶段流转：
 
 ```text
-Align -> Plan -> proposal/design/tasks -> Apply -> Review/Verify -> Close
+Mission Init -> Align -> Plan -> proposal/design/tasks -> Apply -> Review -> Verify -> Close
 ```
 
 ### bug 路径
@@ -42,7 +42,7 @@ Align -> Plan -> proposal/design/tasks -> Apply -> Review/Verify -> Close
 阶段流转：
 
 ```text
-Classify -> Debugging -> bug-log -> Verify -> State Update
+Classify -> Mission Init -> Debugging -> bug-log -> Verify -> Close
 ```
 
 ### resume 路径
@@ -56,8 +56,34 @@ Classify -> Debugging -> bug-log -> Verify -> State Update
 阶段流转：
 
 ```text
-Read state -> Read latest handoff -> Reconfirm route -> Continue
+Read state -> Read latest checkpoint -> Read latest handoff(if any) -> Reconfirm route -> Align/Plan/Apply
 ```
+
+### Explore 分支
+
+进入信号：
+
+- 用户明确说先讨论、先调研、先比较方案
+- 当前还不该承诺方向
+- 需要先做代码调查
+
+阶段流转：
+
+```text
+Classify -> Mission Init -> Explore -> Align
+```
+
+## Mission Init
+
+`Mission Init` 是正式阶段流转前的启动步骤。
+
+目的：
+
+- 建立 `.devflow/<mission-slug>/` 最小工作区
+- 初始化 `workflow.md`、`state.md`、`decision-log.md`
+- 明确当前目标、范围、成功标准和路径
+
+如果 mission 已存在，则 `Mission Init` 的职责变为校验并刷新最小骨架，而不是重复覆盖。
 
 ## 路径升级与降级
 

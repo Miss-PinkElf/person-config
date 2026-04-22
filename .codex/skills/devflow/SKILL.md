@@ -1,7 +1,9 @@
 ---
 name: devflow
 description: |
-  长期开发任务主入口。只要任务会分阶段推进、预计跨多轮继续、需要先讨论再写 plan、需要记录决策/bug/checkpoint/handoff，或用户说“先梳理”“先讨论”“先写 plan”“保存进度”“继续上次”，都应优先使用它。不要把 devflow 当成收尾记录器；它必须在第一次真正推进前介入，并强制执行 Align -> Plan -> Spec/Tasks -> Apply -> Verify/Close。
+  长期开发任务主入口。只要任务会分阶段推进、预计跨多轮继续、需要先讨论再写 plan、需要记录决策/bug/checkpoint/handoff，或用户说“先梳理”“先讨论”“先写 plan”“保存进度”“继续上次”，都应优先使用它。
+  额外触发条件：当工作区内已存在 `.devflow/<mission>/` 且当前对话已读取该 mission 的 `state.md`、`checkpoints.md`、`handoff`、`NEXT-SESSION-PROMPT` 或其他工作区文件时，后续与该 mission 相关的改动默认继续纳入 devflow，而不是按普通即时任务处理；当当前请求明显属于某个活跃 mission 的续作、小改动、恢复或收口时，即使用户没有显式提到 `devflow`，也应继续使用它。
+  不要把 devflow 当成收尾记录器；它必须在第一次真正推进前介入，并强制执行 Align -> Plan -> Spec/Tasks -> Apply -> Verify/Close。
 author: Codex
 version: 0.2.0
 date: 2026-04-15
@@ -34,11 +36,15 @@ date: 2026-04-15
    - 轻量任务也至少做 `Mini Align`
 2. `Plan` 先于 `Propose` 与 `Apply`
    - `plan != spec`
+   - `plan` 回答“做什么、顺序怎么排”
+   - `spec` 回答“为什么这样做、怎么实现、任务如何追踪”
    - 没有落盘的 `plan`，不得进入正式 spec，也不得开始实现
 3. 没有任务定义，不进入 `Apply`
    - 重型路径依赖 `spec/tasks.md`
    - 轻量路径依赖轻量 `tasks`
+   - 进入 `Apply` 前必须重新检查当前路径所需 artifact 是否齐备；缺失则回退补齐
 4. 重要阶段切换、里程碑、暂停与收尾都要写 `checkpoint`
+   - 至少包括：阶段切换、重要里程碑、影响后续方向的关键决策、暂停前或 Close 前
    - `checkpoints.md` 只保留最近 3 条
    - 更旧内容搬到 `checkpoints-archive.md`
 5. 没有新鲜验证证据，不得宣称完成
@@ -102,6 +108,20 @@ date: 2026-04-15
 只要 `devflow` 已经介入，**工作区文件比对话更可信**。  
 如果对话与工作区记录冲突，以当前仓库事实为准，再把差异回写记录。
 
+## 活跃 Mission 自动关联
+
+当以下任一信号出现时，默认认为对应 mission 已被激活：
+
+- 当前对话已读取 `.devflow/<mission>/` 下的 `state.md`、`workflow.md`、`checkpoints.md`、`handoff`
+- 当前对话已读取与该 mission 明确相关的 `NEXT-SESSION-PROMPT`
+- 用户当前请求明显属于该 mission 的续作、小改动、恢复或收口
+
+一旦 mission 已激活，后续相关请求默认继续纳入该 mission，而不是重新按“普通即时任务”处理。只有在以下情况才中断自动关联：
+
+- 用户明确切换到另一个 mission
+- 用户明确说明当前请求与已激活 mission 无关
+- 仓库事实表明当前请求属于完全独立的新任务
+
 ## 职责边界
 
 `devflow` 负责：
@@ -125,8 +145,9 @@ date: 2026-04-15
 
 1. 用户显式指定轻量、重型、bug 或 resume 路径时，优先按用户指定执行
 2. 用户未指定时，先判断路径，再用一两句话说明判断理由
-3. 在进入 `Plan` 或 `Apply` 前，允许用户切换路径
-4. 实施中发现复杂度判断错误时，可以升级或降级路径，但必须回写记录
+3. 如果当前对话已激活某个 mission，则后续相关请求默认继续纳入该 mission
+4. 在进入 `Plan` 或 `Apply` 前，允许用户切换路径
+5. 实施中发现复杂度判断错误时，可以升级或降级路径，但必须回写记录
 
 ### 轻量路径
 
@@ -208,6 +229,7 @@ Classify -> Mission Init -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Ve
 - `Align` 不能跳过，轻量任务也至少要做 Mini Align
 - `Plan` 不能静默省略
 - `plan != spec`
+- 阶段切换前应执行显式检查，而不是只看原则声明
 - 没有任务定义不进入 `Apply`
 - 每轮推进后至少更新 `state.md`
 - 每次重要阶段切换都应决定是否写 `checkpoint`
@@ -215,9 +237,9 @@ Classify -> Mission Init -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Ve
 
 重型路径固定三件套：
 
-- `proposal.md`
-- `design.md`
-- `tasks.md`
+- 当前 mission 的 `spec/proposal.md`
+- 当前 mission 的 `spec/design.md`
+- 当前 mission 的 `spec/tasks.md`
 
 轻量路径至少要求：
 
@@ -252,12 +274,18 @@ Classify -> Mission Init -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Ve
 
 - 重型路径必须写入 `plans/`
 - 轻量路径也必须有最小 plan 记录
+- `plan` 负责说明做什么与实施顺序，不替代正式 spec
 - plan 写完前，不得创建正式 artifact
+- 在 `devflow` 内，重型路径 artifact 默认落到当前 mission 的 `spec/`
+- 重型路径只有 `plan` 没有 `proposal/design/tasks` 时，不得进入 `Apply`
 - 没有 plan，不进入正式实施
 
 ### 实施门禁
 
 - 没有任务定义不进入 `Apply`
+- 重型路径进入 `Apply` 前必须确认 `proposal.md`、`design.md`、`tasks.md` 已存在且与 `plan` 一致
+- 轻量路径进入 `Apply` 前必须至少具备最小 `plan` 与最小 `tasks`
+- 如果前置条件缺失，先回退补齐，再继续实施
 - 如果暴露设计缺陷，停止实施并回退
 
 ### 调试门禁
@@ -299,6 +327,8 @@ Classify -> Mission Init -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Ve
 - 遇到 bug 时写 `bug-log.md`
 - 阶段切换、重要里程碑、暂停前、正式完成当前轮次时写 `checkpoint`
 - `checkpoints.md` 只保留最近 3 条，超出内容搬入 `checkpoints-archive.md`
+- `checkpoint` 回答“做到哪了”，`handoff` 回答“下次怎么接”
+- 正常阶段收束优先写 `checkpoint`；只有跨会话、跨 agent、上下文过长时才强制写 `handoff`
 - 暂停、跨对话、上下文过长、阶段性交接时才生成 `handoff`
 
 不要把 `spec` 当成过程记录，不要把 `handoff` 当成 `state.md` 的替代品，也不要把“聊天里说过”当成已经落盘。

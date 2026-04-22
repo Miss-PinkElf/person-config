@@ -63,10 +63,11 @@
 
 ## 何时写 `checkpoint`
 
-以下情况必须写：
+以下情况必须写（触发矩阵）：
 
 - 阶段切换
 - 完成重要里程碑
+- 做出影响后续实施方向的关键决策
 - 准备暂停
 - 上下文变重，需要压缩
 - 当前轮次准备 Close
@@ -89,7 +90,7 @@
 - 上下文过长
 - 需要把当前阶段交给下一个 agent
 
-正常完成一个任务时，不强制 handoff；更新 `state.md`、必要时写 `checkpoint` 即可。
+正常完成一个任务时，不强制 handoff；更新 `state.md`、必要时写 `checkpoint` 即可。不要用 handoff 替代日常阶段记录。
 
 ## `plan != spec`
 
@@ -102,8 +103,9 @@
 
 ## `checkpoint` 与 `handoff` 的关系
 
-- `checkpoint` 用于阶段内沉淀与近期恢复
-- `handoff` 用于跨会话或跨 agent 交接
+- `checkpoint` 用于阶段内沉淀与近期恢复，回答“做到哪了”
+- `handoff` 用于跨会话或跨 agent 交接，回答“下次怎么接”
+- 正常阶段收束优先写 `checkpoint`
 - 一次暂停通常先写 `checkpoint`，再决定是否需要 `handoff`
 
 ## 恢复时的读取顺序
@@ -115,4 +117,4 @@
 3. 最新 `handoff`（如果存在）
 4. `workflow.md`
 
-不要在缺少 checkpoint 的情况下只读 handoff；很多正常收尾只会写 checkpoint，不会写 handoff。
+不要在缺少 checkpoint 的情况下只读 handoff；很多正常收尾只会写 checkpoint，不会写 handoff。恢复时如果这些文件已经明确指向某个活跃 mission，后续相关工作默认继续纳入该 mission。

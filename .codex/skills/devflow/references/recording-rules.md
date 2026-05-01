@@ -18,6 +18,11 @@
   - 当前路径变化
   - 当前阶段变化
   - 里程碑或阶段出口条件变化
+- `development-overview.md`
+  - 当前轮改变了长期目标、阶段划分、关键背景或需求演进理解
+  - 用户需要一个“总的记录”来理解项目或需求的完整开发过程
+
+`state.md` 与 `workflow.md` 采用滚动摘要（Rolling Summary）：更新当前事实，删减过时细节，不把每次对话完整追加进去。
 
 ## 何时写 `plan`
 
@@ -52,6 +57,24 @@
 - 当前阶段出口条件变化
 
 `workflow.md` 记录的是当前 mission 主线，不应该长期停留在过时阶段。
+
+## 何时更新 `development-overview.md`
+
+`development-overview.md` 是总记录（Overall Record），用于帮助人理解完整开发过程。
+
+以下情况更新：
+
+- mission 从单次需求变成长期主题
+- 新增或结束一个重要阶段
+- 用户确认了影响后续理解的长期目标、范围或边界
+- 某次踩坑会改变后续工作方式
+- 恢复热路径文件需要瘦身，但历史脉络仍值得保留
+
+注意：
+
+- 它不是默认恢复文件
+- 不替代 `state.md`、`workflow.md`、`decision-log.md` 或 checkpoint
+- 可以比 `state.md` 更长，但应按阶段整理，不要粘贴原始聊天记录
 
 ## 何时写 `bug-log.md`
 
@@ -113,8 +136,33 @@
 正常恢复当前 mission 时，优先顺序应为：
 
 1. `state.md`
-2. 最近一次 `checkpoint`
-3. 最新 `handoff`（如果存在）
-4. `workflow.md`
+2. `checkpoints.md`
+3. 按 `state.md` 或 checkpoint 指针读取 `workflow.md`
+4. 按指针读取最新 `handoff`、`development-overview.md`、`plans/` 或 `spec/`
+
+这条路径是恢复热路径（Resume Hot Path），目标是用最少上下文恢复当前工作。
+
+以下情况才读取深度追溯路径（Deep Trace Path）：
+
+- 用户要求理解完整开发过程
+- 当前状态与 checkpoint 冲突，需要追溯决策
+- 准备跨 agent 交接、归档或复盘
+- `state.md` 或 checkpoint 明确要求读取某个 plan、spec、handoff 或 `development-overview.md`
 
 不要在缺少 checkpoint 的情况下只读 handoff；很多正常收尾只会写 checkpoint，不会写 handoff。恢复时如果这些文件已经明确指向某个活跃 mission，后续相关工作默认继续纳入该 mission。
+
+## 文件预算建议
+
+为了避免长期 mission 越做越难恢复，建议控制：
+
+- `state.md`：约 80-120 行，保留当前快照、风险、下一步和关键指针
+- `workflow.md`：约 60-100 行，保留当前目标、范围、阶段和里程碑
+- `checkpoints.md`：最近 3 条
+- `development-overview.md`：可持续增长，但不进入默认恢复热路径
+
+当 `state.md` 或 `workflow.md` 变长时：
+
+- 将历史脉络移入 `development-overview.md`
+- 将事件细节移入 `checkpoints.md` 或 `checkpoints-archive.md`
+- 将取舍原因移入 `decision-log.md`
+- 将跨会话交接细节移入 handoff

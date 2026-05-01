@@ -153,7 +153,7 @@
 - mission 已存在时“刷新骨架而不是重建”的说明
 - 必要时补充进入 Apply 的最小检查示例
 
-### 6.5 `.devflow/devflow-skill-prompt-4-22-optimization/`
+### 6.5 `.devflow/devflow-skill-optimization/`
 
 职责：
 

@@ -13,6 +13,7 @@
 ├── learnings.md
 ├── checkpoints.md
 ├── checkpoints-archive.md
+├── development-overview.md
 ├── session-tasks.md
 └── handoffs/
 ```
@@ -64,6 +65,7 @@ mission 初始化时立即创建：
 - `checkpoints.md`
 - `checkpoints-archive.md`
 - `session-tasks.md`
+- `development-overview.md`
 - `handoffs/`
 
 这样既保留长期任务骨架，也避免小任务一开始铺满空文件。
@@ -86,6 +88,47 @@ mission 初始化时立即创建：
   - 阶段切换、里程碑、暂停前、Close 前
 - `handoff-template.md`
   - 暂停、跨对话、上下文过长、阶段性交接
+- `development-overview-template.md`
+  - 长期 mission、需求演进、阶段复盘、需要给人理解完整开发过程时
+
+## 上下文预算与读取分层
+
+默认恢复只读取恢复热路径（Resume Hot Path）：
+
+1. `state.md`
+2. `checkpoints.md`
+
+按需再读取深度追溯路径（Deep Trace Path）：
+
+- `workflow.md`
+- `development-overview.md`
+- `decision-log.md`
+- `plans/`
+- `spec/`
+- `handoffs/`
+- `checkpoints-archive.md`
+
+判断标准：
+
+- 需要恢复当前工作：读热路径
+- 需要理解完整过程：读 `development-overview.md`
+- 需要解释为什么这么做：读 `decision-log.md`
+- 需要执行计划或核对规格：读 `plans/` 或 `spec/`
+- 需要跨会话交接：读最新 handoff
+
+## 文件预算建议
+
+- `state.md`：建议 80-120 行内，写当前状态、风险、下一步、关键指针
+- `workflow.md`：建议 60-100 行内，写当前目标、范围、阶段、里程碑
+- `checkpoints.md`：只保留最近 3 条
+- `development-overview.md`：允许长期增长，但不默认读取
+
+如果 `state.md` 或 `workflow.md` 超过预算，优先把历史内容移动到：
+
+- `development-overview.md`
+- `decision-log.md`
+- `checkpoints-archive.md`
+- `handoffs/`
 
 ## Checkpoint 规则
 
@@ -109,9 +152,10 @@ mission 初始化时立即创建：
 
 1. `state.md`
 2. `checkpoints.md`
-3. 最新 `handoff`
-4. `workflow.md`
-5. `spec/` 或 `plans/`
+3. `workflow.md`（仅在阶段或目标不清楚时）
+4. 最新 `handoff`（仅在跨会话交接或 state/checkpoint 指向时）
+5. `development-overview.md`（仅在需要理解完整开发过程时）
+6. `spec/` 或 `plans/`（仅在准备实施或核对正式方案时）
 
 ## 轻量 Plan 最小模板
 
@@ -129,6 +173,38 @@ mission 初始化时立即创建：
 
 - 模板要足够短，确保小改动也愿意先写计划
 - 只要任务已纳入某个 mission，就不要因为“改动很小”而跳过这个最小模板
+
+## 总记录最小模板
+
+长期 mission 建议维护 `development-overview.md`。推荐模板：
+
+```markdown
+# [Mission 名称] 总记录（Development Overview）
+
+## 定位
+
+本文件用于理解完整开发过程，不是默认恢复热路径。
+
+## 背景
+
+为什么开启这个 mission。
+
+## 已完成阶段
+
+按阶段列出目标、输入、正式改动、验证证据。
+
+## 关键决策
+
+只列影响后续理解的决策，详细原因指向 `decision-log.md`。
+
+## 当前开放问题
+
+仍需观察、讨论或后续实施的事项。
+
+## 推荐读取策略
+
+说明日常恢复读什么，深度追溯读什么。
+```
 
 ## 进入 Apply 的最小检查示例
 

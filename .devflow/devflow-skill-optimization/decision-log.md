@@ -60,4 +60,36 @@
 
 - 背景：本轮执行过程中，曾误将 `proposal.md`、`design.md`、`tasks.md` 写到 `openspec/changes/`
 - 原因：主 skill 与 `openspec-propose` 子 skill 对 artifact 路径的契约不够硬，导致执行时滑到了全局路径
-- 影响：当前已将三件套迁回 `.devflow/devflow-skill-prompt-4-22-optimization/spec/`，并同步修正文档中的默认路径说明
+- 影响：当前已将三件套迁回 mission 本地 `spec/`，并同步修正文档中的默认路径说明
+
+## 2026-05-01
+
+### 决策 11：将 mission 命名从单次 prompt 绑定调整为长期主题
+
+- 背景：用户指出当前 mission 名称带有日期和 prompt 编号，不适合作为长期 `devflow` 技能（DevFlow skill）优化工作区
+- 原因：该 mission 的真实目标是持续优化 `devflow` 技能，而不是只处理 `prompt-4-22` 这一轮输入
+- 影响：mission 目录调整为 `.devflow/devflow-skill-optimization/`，恢复入口与当前状态同步使用新 slug
+
+### 决策 12：新增总记录（overall record），但不放入默认恢复热路径
+
+- 背景：用户希望有一个能理解项目或需求开发过程的总记录，同时担心恢复 token 消耗和文件无限增长
+- 原因：人类理解需要完整脉络，agent 日常恢复需要短上下文；两者职责不同
+- 影响：新增 `development-overview.md` 作为开发总览（development overview），日常恢复仍优先读取 `state.md` 与 `checkpoints.md`
+
+### 决策 13：优化 `devflow` 技能本体，同时同步交接提示词
+
+- 背景：用户追问“这个 skills 不需要优化吗”，并明确要求按照 `skill-creator-cc` 优化该 skill
+- 原因：只改 `devflow-handoff.md` 只能改善收尾提示词，不能改变 `devflow` 技能（DevFlow skill）本体在恢复、记录和上下文预算上的默认行为
+- 影响：本轮正式修改 `.codex/skills/devflow/SKILL.md`、`references/recording-rules.md`、`references/workspace-and-templates.md`，并同步更新 `devflow-handoff.md`
+
+### 决策 14：恢复热路径默认只读 `state.md` 与 `checkpoints.md`
+
+- 背景：用户同时担心恢复 token 消耗和记录文件无限增长
+- 原因：长期 mission 需要把“恢复当前工作”和“理解完整过程”拆成两条路径
+- 影响：`state.md` 与 `checkpoints.md` 成为默认恢复热路径（Resume Hot Path）；`development-overview.md`、`decision-log.md`、`plans/`、`spec/`、`handoffs/` 作为深度追溯路径（Deep Trace Path）按需读取
+
+### 决策 15：暂不将 handoff 拆成多模式
+
+- 背景：用户反馈 `devflow-handoff.md` 普通收尾可能耗时约 20 分钟
+- 原因：曾讨论快速收尾、上下文压缩交接与深度交接等多模式，但用户明确要求 `devflow-handoff.md` 暂时不优化，保持原本流程
+- 影响：已撤回 `devflow-handoff.md` 与内置 `session-handoff` 子技能的分模式改动；耗时问题保留在 `bug-log.md`，后续如继续处理需重新对齐方案

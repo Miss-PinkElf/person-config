@@ -22,6 +22,7 @@ date: 2026-04-15
 3. 把阶段推进委托给 OpenSpec 子技能
 4. 把质量门禁委托给 Superpowers 子技能
 5. 在暂停、续接、上下文压缩时协调 handoff
+6. 控制恢复时的上下文预算（Context Budget），避免长期 mission 越做越难恢复
 
 一句话：
 
@@ -47,8 +48,12 @@ date: 2026-04-15
    - 至少包括：阶段切换、重要里程碑、影响后续方向的关键决策、暂停前或 Close 前
    - `checkpoints.md` 只保留最近 3 条
    - 更旧内容搬到 `checkpoints-archive.md`
-5. 没有新鲜验证证据，不得宣称完成
-6. 首次进入 mission 时，必须先完成 `Mission Init`
+5. 恢复热路径（Resume Hot Path）必须保持短
+   - 默认只读 `state.md` 与 `checkpoints.md`
+   - 只有 `state.md`、`checkpoint` 或用户请求明确指向时，才继续读取 `workflow.md`、最新 `handoff`、`development-overview.md`、`plans/` 或 `spec/`
+   - 不得因为“可能有用”而默认全量读取整个 mission 工作区
+6. 没有新鲜验证证据，不得宣称完成
+7. 首次进入 mission 时，必须先完成 `Mission Init`
    - 至少创建并初始化 `workflow.md`、`state.md`、`decision-log.md`
    - 没有初始化工作区，不进入 `Align`
 
@@ -79,14 +84,23 @@ date: 2026-04-15
 
 优先信任：
 
-- `workflow.md`
 - `state.md`
+- `checkpoints.md`
+- `workflow.md`
 - `decision-log.md`
+- `development-overview.md`
 - `plans/`
 - `spec/`
 - `bug-log.md`
-- `checkpoints.md`
 - 最新 `handoff`
+
+恢复时的默认读取顺序不同于“可信度列表”：
+
+```text
+state.md -> checkpoints.md -> 按指针读取 workflow / handoff / development-overview / plans / spec
+```
+
+`state.md` 与 `workflow.md` 应是当前快照（Current Snapshot），不要承担完整历史；完整脉络写入 `development-overview.md`、`decision-log.md`、`checkpoints-archive.md` 或 handoff。
 
 默认创建：
 
@@ -103,6 +117,7 @@ date: 2026-04-15
 - `checkpoints.md`
 - `checkpoints-archive.md`
 - `session-tasks.md`
+- `development-overview.md`
 - `handoffs/`
 
 只要 `devflow` 已经介入，**工作区文件比对话更可信**。  
@@ -322,16 +337,40 @@ Classify -> Mission Init -> Align -> Plan -> Propose/Tasks -> Apply -> Review/Ve
 - mission 建立或恢复后，先校验 `workflow.md`、`state.md`、`decision-log.md`
 - 每轮推进后至少更新 `state.md`
 - 路径变化、阶段变化、里程碑调整后更新 `workflow.md`
+- 重要历史脉络、阶段总览、需求演进写入 `development-overview.md`，不要塞进 `state.md`
 - 做出关键选择后更新 `decision-log.md`
 - 对齐确认后必须写 `plan`
 - 遇到 bug 时写 `bug-log.md`
 - 阶段切换、重要里程碑、暂停前、正式完成当前轮次时写 `checkpoint`
 - `checkpoints.md` 只保留最近 3 条，超出内容搬入 `checkpoints-archive.md`
 - `checkpoint` 回答“做到哪了”，`handoff` 回答“下次怎么接”
+- `development-overview.md` 回答“为什么这样演进、整体做过什么”，只在人类理解完整过程或深度恢复时读取
+- `state.md` 与 `workflow.md` 采用滚动摘要（Rolling Summary），更新时优先改写当前状态，不追加长历史
 - 正常阶段收束优先写 `checkpoint`；只有跨会话、跨 agent、上下文过长时才强制写 `handoff`
 - 暂停、跨对话、上下文过长、阶段性交接时才生成 `handoff`
 
 不要把 `spec` 当成过程记录，不要把 `handoff` 当成 `state.md` 的替代品，也不要把“聊天里说过”当成已经落盘。
+
+## 上下文预算
+
+长期 mission 的记录要分成两类：
+
+- 恢复热路径（Resume Hot Path）：`state.md`、`checkpoints.md`
+- 深度追溯路径（Deep Trace Path）：`development-overview.md`、`decision-log.md`、`checkpoints-archive.md`、`plans/`、`spec/`、`handoffs/`
+
+默认恢复只读取热路径。只有以下情况才进入深度追溯路径：
+
+- 用户要求理解完整开发过程
+- 当前状态或 checkpoint 明确指向某个 plan、spec、handoff 或总记录
+- 出现冲突，需要追溯历史决策
+- 准备做跨 agent 交接或归档
+
+建议保持：
+
+- `state.md`：短当前态，避免超过约 120 行
+- `workflow.md`：短流程视图，避免超过约 100 行
+- `checkpoints.md`：最近 3 条
+- `development-overview.md`：可增长，但不默认读取
 
 ## 读取地图
 

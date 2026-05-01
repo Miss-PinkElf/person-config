@@ -13,10 +13,10 @@
 ### Task 1: 产出 proposal / design / tasks 三件套
 
 **Files:**
-- Create: `.devflow/devflow-skill-prompt-4-22-optimization/spec/proposal.md`
-- Create: `.devflow/devflow-skill-prompt-4-22-optimization/spec/design.md`
-- Create: `.devflow/devflow-skill-prompt-4-22-optimization/spec/tasks.md`
-- Reference: `.devflow/devflow-skill-prompt-4-22-optimization/plans/2026-04-22-devflow-skill-optimization-align.md`
+- Create: `.devflow/devflow-skill-optimization/spec/proposal.md`
+- Create: `.devflow/devflow-skill-optimization/spec/design.md`
+- Create: `.devflow/devflow-skill-optimization/spec/tasks.md`
+- Reference: `.devflow/devflow-skill-optimization/plans/2026-04-22-devflow-skill-optimization-align.md`
 
 - [ ] **Step 1: 基于 Align 与 Plan 提炼 proposal**
 
@@ -29,7 +29,7 @@ proposal 至少包含：
 - 预期收益与风险
 ```
 
-Run: `Test-Path '.devflow/devflow-skill-prompt-4-22-optimization/spec'`
+Run: `Test-Path '.devflow/devflow-skill-optimization/spec'`
 Expected: 若目录不存在，则先创建当前 mission 的 `spec/` 目录再写 proposal。
 
 - [ ] **Step 2: 提炼 design，固定文件边界与规则归属**
@@ -69,14 +69,14 @@ Expected: tasks 能作为后续 Apply 的直接追踪依据。
 - 是否没有把评测资产或子 skill 误写进正式范围
 ```
 
-Run: `Get-Content -Raw '.devflow/devflow-skill-prompt-4-22-optimization/spec/<file>'`
+Run: `Get-Content -Raw '.devflow/devflow-skill-optimization/spec/<file>'`
 Expected: 三件套与本轮 scope 完全一致。
 
 ### Task 2: 更新主 skill 入口与触发摘要
 
 **Files:**
 - Modify: `.codex/skills/devflow/SKILL.md`
-- Reference: `.devflow/devflow-skill-prompt-4-22-optimization/plans/2026-04-22-devflow-skill-optimization-align.md`
+- Reference: `.devflow/devflow-skill-optimization/plans/2026-04-22-devflow-skill-optimization-align.md`
 
 - [ ] **Step 1: 重新阅读主 skill 当前结构，锁定需要改写的段落**
 
@@ -315,10 +315,10 @@ Expected: 模板足够直接，不会逼出冗长文档。
 ### Task 6: 联合校对、状态回写与验证
 
 **Files:**
-- Modify: `.devflow/devflow-skill-prompt-4-22-optimization/workflow.md`
-- Modify: `.devflow/devflow-skill-prompt-4-22-optimization/state.md`
-- Modify: `.devflow/devflow-skill-prompt-4-22-optimization/decision-log.md`
-- Create: `.devflow/devflow-skill-prompt-4-22-optimization/checkpoints.md`
+- Modify: `.devflow/devflow-skill-optimization/workflow.md`
+- Modify: `.devflow/devflow-skill-optimization/state.md`
+- Modify: `.devflow/devflow-skill-optimization/decision-log.md`
+- Create: `.devflow/devflow-skill-optimization/checkpoints.md`
 
 - [ ] **Step 1: 通读四份正式变更文件，检查术语与职责一致性**
 

@@ -6,7 +6,7 @@
 
 ## 当前阶段
 
-`Research Apply（研究执行）已完成研究整理，当前处于 Handoff（交接暂停）`
+`Research Documentation（研究文档产出）已完成代码位置清单，当前处于 Handoff（交接暂停）`
 
 ## 阶段门禁
 
@@ -19,8 +19,11 @@
 - 开源记忆项目（Open-source Memory Projects）探索记录。
 - 桌宠记忆系统（Desktop Pet Memory System）横向对比。
 - 面向现有记忆内核（Memory Kernel）的优化建议。
+- 面向 `agent-desktop-pet` 实现的开源源码借鉴位置清单。
 
 ## 当前暂停点
 
 - 已完成开源项目研究结果落盘。
-- 下一轮直接基于 `research-notes.md` 输出最终研究报告。
+- 已生成 `zzz-prompt-debug/记忆/开源记忆系统可借鉴代码位置清单.md`。
+- 下一轮如继续原始研究交付，直接基于 `research-notes.md` 输出最终研究报告。
+- 下一轮如转入另一个项目实现，优先使用代码位置清单作为阅读地图。

@@ -17,7 +17,9 @@
   - `Letta`
   - `VCPToolBox`
   - `VCPChat`
-- 当前阶段不是继续探索，而是直接产出最终研究报告。
+- 已额外生成面向 `agent-desktop-pet` 实现使用的源码借鉴地图：
+  `zzz-prompt-debug/记忆/开源记忆系统可借鉴代码位置清单.md`
+- 当前阶段不是继续探索，而是根据下一步目标二选一：继续产出最终研究报告，或切换到另一个项目按清单实现。
 
 ## 未完成的任务清单
 
@@ -30,25 +32,29 @@
    - 对现有桌宠记忆内核（Memory Kernel）的启发
    - 推荐优化路线
    - 暂不建议做的事情
+3. 如果切换到 `agent-desktop-pet` 项目实现，需要先读取该项目真实代码，确认哪些记忆能力已经实现，不能把目标设计文档当成实现状态。
 
 ## 未讨论完的议题
 
 - 如何把“事实型长期记忆”“关系记忆”“反思记忆”“生活史档案”拆成清晰的落地层次。
 - 哪些方案适合 MVP，哪些只适合中长期演进。
 - 如何在最终结论里明确隐私控制与用户可见治理的重要性。
+- 如果进入实现阶段，第一条最小闭环建议是：游戏会话（game_sessions）-> 信号记录（SignalRecord）-> 记忆事件（MemoryEvent）-> 兴趣画像（InterestProfile）-> 回忆服务（RecallService）-> 主动关心（Heart）。
 
 ## 需要注意的上下文信息
 
 - 本轮不修改业务代码，主要是研究文档产出。
+- `zzz-prompt-debug/记忆/桌宠最终记忆系统详解.md` 是目标设计文档（Target Design Document），不是当前实现状态。
 - `VCPToolBox / VCPChat` 内容很多，最终报告里要聚焦记忆相关部分，不要被工具生态带偏。
 - `BaiShou`、`LifeBook`、`Memobase`、`Graphiti` 是对桌宠记忆系统最关键的参考对象。
 - `mem0` 与 `langmem` 更适合作为“记忆层 / 行为层”的工程抽象参考。
+- `开源记忆系统可借鉴代码位置清单.md` 中按用户要求使用了绝对路径；路径依赖当前 `person-config` 工作区位置。
 
 ## 建议下次对话优先处理的事项
 
-1. 先读研究笔记，确认项目分层。
-2. 直接写最终研究报告，不再重复仓库探索。
-3. 如有必要，再回看 `桌宠最终记忆系统详解.md` 对齐结论表述。
+1. 如果继续研究交付：先读研究笔记，直接写最终研究报告，不再重复仓库探索。
+2. 如果切换到实现：先读 `开源记忆系统可借鉴代码位置清单.md`，再进入 `agent-desktop-pet` 项目读取真实代码。
+3. 如有必要，再回看 `桌宠最终记忆系统详解.md` 对齐目标设计表述。
 
 ## 恢复读取建议
 
@@ -57,5 +63,6 @@
   - `.devflow/desktop-pet-memory-research/checkpoints.md`
 - 然后读：
   - `.devflow/desktop-pet-memory-research/research-notes.md`
+  - `zzz-prompt-debug/记忆/开源记忆系统可借鉴代码位置清单.md`
 - 需要理解完整交接时再读：
-  - `.devflow/desktop-pet-memory-research/handoffs/2026-05-03-002-wrap-up.md`
+  - `.devflow/desktop-pet-memory-research/handoffs/2026-05-03-003-code-map-wrap-up.md`

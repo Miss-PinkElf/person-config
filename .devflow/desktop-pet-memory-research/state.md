@@ -8,6 +8,8 @@
 
 阅读 `zzz-prompt-debug/记忆/prompt.md`，围绕 `zzz-prompt-debug/记忆/原始PRD.md`、`zzz-prompt-debug/记忆/桌宠项目详细PRD.md`、`zzz-prompt-debug/记忆/记忆相关.md` 和 `zzz-prompt-debug/记忆/桌宠最终记忆系统详解.md` 完成开源记忆系统研究、架构分析和对比。
 
+本轮追加请求：基于已探索的开源记忆系统（Open-source Memory Systems），生成一份“可借鉴什么、对应源码在哪里”的落地清单，供另一个 `agent-desktop-pet` 项目实现桌宠记忆系统设计（Desktop Pet Memory System Design）时使用；文档中的源码位置按用户要求使用绝对路径。
+
 ## 已读取输入
 
 - `zzz-prompt-debug/记忆/prompt.md`
@@ -29,11 +31,14 @@
 - 已确认采用“聚焦深度对比”方案。
 - 已写入对齐记录：`.devflow/desktop-pet-memory-research/plans/2026-05-03-memory-system-research-align.md`
 - 已写入计划：`.devflow/desktop-pet-memory-research/plans/2026-05-03-memory-system-research-plan.md`
+- 已写入代码位置清单计划：`.devflow/desktop-pet-memory-research/plans/2026-05-03-open-source-memory-reference-code-map-plan.md`
+- 已生成可借鉴代码位置清单：`zzz-prompt-debug/记忆/开源记忆系统可借鉴代码位置清单.md`
 
 ## 当前阶段状态
 
 - 当前处于 `Handoff（交接暂停）`
-- 研究阶段的项目分析已经全部落盘，下一轮直接写最终报告
+- 研究阶段的项目分析已经全部落盘
+- 已额外产出面向实现落地的“可借鉴代码位置清单”
 
 ## 已完成的阶段性研究
 
@@ -52,12 +57,15 @@
 
 ## 下一步
 
-- 直接输出最终研究报告：
+- 如继续推进原始研究交付，下一步仍是输出最终研究报告：
   - `zzz-prompt-debug/记忆/开源记忆系统对比与桌宠优化建议.md`
+- 如转入另一个 `agent-desktop-pet` 项目实现，优先读取：
+  - `zzz-prompt-debug/记忆/开源记忆系统可借鉴代码位置清单.md`
+  - `zzz-prompt-debug/记忆/桌宠最终记忆系统详解.md`
 
 ## 最新 handoff
 
-- `.devflow/desktop-pet-memory-research/handoffs/2026-05-03-002-wrap-up.md`
+- `.devflow/desktop-pet-memory-research/handoffs/2026-05-03-003-code-map-wrap-up.md`
 
 ## 研究仓库清单
 

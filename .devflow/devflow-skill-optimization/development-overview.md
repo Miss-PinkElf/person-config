@@ -117,6 +117,41 @@
 - `devflow-handoff.md` 后续只做轻量适配：保持原本直接交接流程，但补充上下文预算、总记录和恢复热路径规则。
 - 耗时问题保留在 `bug-log.md`，后续如继续优化需重新对齐方案。
 
+### 第五轮：v0.4 记录生命周期规则补齐
+
+触发原因：
+
+- 用户提供 `zzz-prompt-debug/devflow优化/优化思路-1.md` 与 `zzz-prompt-debug/devflow优化/优化思路-2.md`，要求继续优化 `devflow` 技能（DevFlow skill）。
+- 用户明确要求同时使用 `skill-creator-cc` 与 `devflow`，先理解需求、对齐需求、提出计划（Plan），再进入实施（Apply）。
+- 用户修正了 `origin.md` 的口径：原始需求（origin）不是创建后不改，而是要支持多次追加 prompt，例如 `zzz-prompt-debug/不让subagent黑盒/prompt-1.md`、`prompt-2.md` 这类输入集合。
+
+正式修改文件：
+
+- `.codex/skills/devflow/SKILL.md`
+- `.codex/skills/devflow/references/recording-rules.md`
+- `.codex/skills/devflow/references/workspace-and-templates.md`
+- `.codex/skills/devflow/assets/templates/state-template.md`
+- `.codex/skills/devflow/assets/templates/origin-template.md`
+- `.codex/skills/devflow/assets/templates/backlog-template.md`
+- `.codex/skills/devflow/assets/templates/deferred-template.md`
+- `devflow-handoff.md`
+- `.devflow/devflow-skill-optimization/origin.md`
+- `.devflow/devflow-skill-optimization/state-history.md`
+
+核心落地内容：
+
+- `origin.md` 定位为原始输入索引（Raw Input Source Index），允许追加多次原始 prompt，只记录相对路径、用途与吸收状态，不强制复制全文。
+- `state.md` 定位为 30 行内短当前快照；旧快照归档到 `state-history.md`，恢复时默认不读历史。
+- `Apply` 阶段默认专注实现，不被频繁过程文档更新打断；阶段回退、暂停、上下文压缩或 Close 前才写必要记录。
+- 延期项拆成 `backlog.md` 与 `deferred/`：前者记录一句话轻量想法，后者记录明确延期的功能或逻辑。
+- `devflow-handoff.md` 保持单一交接流程，但新增 origin、state-history、backlog/deferred 检查顺序。
+
+验证证据：
+
+- 关键词落点搜索覆盖 `.codex/skills/devflow`、`devflow-handoff.md` 与当前 mission。
+- 冲突搜索确认旧的 `state.md 80-120 行` 预算已移除；保留“冻结”表述仅用于说明 `origin.md` 不是冻结文件。
+- `git diff --check` 仅报告 LF/CRLF warning，无空白错误。
+
 ## 关键决策
 
 - `devflow` mission 应按长期主题命名，而不是按日期、prompt 或某一次输入命名。
@@ -128,6 +163,8 @@
 - `devflow` 技能本体需要承载上下文预算规则；交接提示词只能同步这些规则，不能替代 skill 本体优化。
 - 默认恢复只读 `state.md` 与 `checkpoints.md`，深度追溯文件必须按需读取。
 - handoff 耗时问题存在，但暂时不引入快速 / 深度等多模式设计。
+- `origin.md` 是可追加的原始输入索引（Raw Input Source Index），不是不可变需求正文。
+- `state.md` 是短当前快照，旧快照进入 `state-history.md`，默认恢复不读取历史。
 
 ## 当前开放问题
 
@@ -149,12 +186,12 @@
 3. `plans/`
 4. `spec/`
 5. `handoffs/`
+6. `origin.md`、`state-history.md`、`backlog.md`、`deferred/`（仅在需要追溯输入、旧状态或延期项时）
 
 ## 下一步建议
 
-下一轮正式优化建议聚焦“上下文预算（context budget）与滚动摘要（rolling summary）”：
+下一轮正式优化建议优先从以下方向选择：
 
-- 明确恢复热路径（resume hot path）默认读取哪些文件
-- 明确 `state.md` 和 `workflow.md` 如何保持短快照
-- 明确总记录（overall record）何时更新、何时读取
-- 明确 checkpoint 与 archive 的窗口规则
+- 子技能协同：检查 OpenSpec / Superpowers 子技能是否仍会违背 `devflow` 外层记录与阶段门禁。
+- 评测资产（Evaluation assets）：用真实 prompt 验证 `devflow` 是否稳定触发 Align、Plan、Apply、Verify 与 Close。
+- handoff 性能：如果继续处理 20 分钟耗时问题，需要重新对齐方案，不直接拆多模式。

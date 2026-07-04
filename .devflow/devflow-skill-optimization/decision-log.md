@@ -93,3 +93,23 @@
 - 背景：用户反馈 `devflow-handoff.md` 普通收尾可能耗时约 20 分钟
 - 原因：曾讨论快速收尾、上下文压缩交接与深度交接等多模式，但用户明确要求 `devflow-handoff.md` 暂时不优化，保持原本流程
 - 影响：已撤回 `devflow-handoff.md` 与内置 `session-handoff` 子技能的分模式改动；耗时问题保留在 `bug-log.md`，后续如继续处理需重新对齐方案
+
+## 2026-07-04
+
+### 决策 16：v0.4 记录生命周期优化继续采用方案 B
+
+- 背景：用户提供 `优化思路-1.md` 与 `优化思路-2.md`，要求继续优化 `devflow` 技能（DevFlow skill），并要求先对齐、写计划（Plan）、再实施（Apply）
+- 原因：本轮核心是补齐顶层记录生命周期规则，不适合同时修改 OpenSpec / Superpowers 子技能（sub-skills）或建设评测资产（Evaluation assets）
+- 影响：正式范围限定为 `.codex/skills/devflow` 顶层技能、references、templates、`devflow-handoff.md` 与当前 mission 记录；旧版 `skills/all-skills/devflow-v1` 不修改
+
+### 决策 17：`origin.md` 作为可追加的原始输入索引
+
+- 背景：用户指出同一需求可能多次追加 prompt，例如 `zzz-prompt-debug/不让subagent黑盒/prompt-1.md`、`prompt-2.md`
+- 原因：原始需求不是单次冻结正文，而是持续追加的输入集合；强制“创建后不改”会丢失后续 prompt 的来源关系
+- 影响：`origin.md` 记录相对路径、时间、用途与吸收状态，允许追加，不强制复制全文
+
+### 决策 18：子技能协同与评测资产延期
+
+- 背景：本轮对齐时明确不改子技能，不做评测资产
+- 原因：这两个方向都需要新的需求对齐和计划，不能夹带进本轮 Apply
+- 影响：已写入 `backlog.md` 与 `deferred/`，下次如继续推进需重新进入 Align / Plan

@@ -49,3 +49,22 @@
   - `.codex/skills/devflow/references/workspace-and-templates.md`
   - 验证命令：`rg -n '额外触发条件|活跃 Mission 自动关联|触发矩阵|轻量 Plan 最小模板|重型路径进入 \`Apply\` 前必须确认|checkpoint 回答|Mission Init 的职责是校验并刷新最小骨架' ...`
   - 验证命令：`git diff --check -- '.codex/skills/devflow/SKILL.md' '.codex/skills/devflow/references/routing-and-stages.md' '.codex/skills/devflow/references/recording-rules.md' '.codex/skills/devflow/references/workspace-and-templates.md'`
+# 2026-05-01 - handoff 耗时问题记录与分模式方案撤回
+
+- 当前路径与阶段：bug 路径（Bug Route） / Verify
+- 本轮完成内容：
+  - 记录 `devflow-handoff.md` 普通收尾耗时约 20 分钟的问题到 `bug-log.md`
+  - 曾尝试将 `devflow-handoff.md` 与内置 `session-handoff` 子技能拆成多模式
+  - 用户确认暂时不优化 `devflow-handoff.md`，不引入多模式
+  - 已撤回 `devflow-handoff.md` 与 `session-handoff` 子技能中的分模式改动
+- 关键决策：
+  - `devflow-handoff.md` 暂时保持原本直接交接流程
+  - handoff 耗时问题保留记录，后续如继续优化需重新对齐方案
+- 风险与阻塞：
+  - 约 20 分钟耗时问题尚未解决
+- 立即下一步：
+  - 继续优先完成已确认的 `devflow` 技能上下文预算与总记录优化
+  - 如要重新处理 handoff 性能，先讨论方案，不直接拆模式
+- 相关文件与证据：
+  - `devflow-handoff.md`
+  - `.devflow/devflow-skill-optimization/bug-log.md`

@@ -1,25 +1,5 @@
 # Checkpoints
 
-## 2026-05-01 - handoff 耗时问题记录与分模式方案撤回
-
-- 当前路径与阶段：bug 路径（Bug Route） / Verify
-- 本轮完成内容：
-  - 记录 `devflow-handoff.md` 普通收尾耗时约 20 分钟的问题到 `bug-log.md`
-  - 曾尝试将 `devflow-handoff.md` 与内置 `session-handoff` 子技能拆成多模式
-  - 用户确认暂时不优化 `devflow-handoff.md`，不引入多模式
-  - 已撤回 `devflow-handoff.md` 与 `session-handoff` 子技能中的分模式改动
-- 关键决策：
-  - `devflow-handoff.md` 暂时保持原本直接交接流程
-  - handoff 耗时问题保留记录，后续如继续优化需重新对齐方案
-- 风险与阻塞：
-  - 约 20 分钟耗时问题尚未解决
-- 立即下一步：
-  - 继续优先完成已确认的 `devflow` 技能上下文预算与总记录优化
-  - 如要重新处理 handoff 性能，先讨论方案，不直接拆模式
-- 相关文件与证据：
-  - `devflow-handoff.md`
-  - `.devflow/devflow-skill-optimization/bug-log.md`
-
 ## 2026-05-01 - `devflow-handoff.md` 适配上下文预算规则
 
 - 当前路径与阶段：重型路径（Heavy Route） / Close
@@ -65,3 +45,34 @@
   - `.codex/skills/devflow/references/workspace-and-templates.md`
   - `devflow-handoff.md`
   - `.devflow/devflow-skill-optimization/plans/2026-05-01-context-budget-overall-record-plan.md`
+
+## 2026-07-04 - v0.4 记录生命周期规则补齐
+
+- 当前路径与阶段：重型路径（Heavy Route） / Close
+- 本轮完成内容：
+  - 读取并吸收 `zzz-prompt-debug/devflow优化/优化思路-1.md` 与 `zzz-prompt-debug/devflow优化/优化思路-2.md`
+  - 按 `skill-creator-cc` 改进现有 `devflow` 技能（DevFlow skill）
+  - 新增本轮计划：`.devflow/devflow-skill-optimization/plans/2026-07-04-devflow-v04-recording-lifecycle-plan.md`
+  - 将 `origin.md` 定位修正为可追加的原始输入索引（Raw Input Source Index）
+  - 补齐状态分层（state layering）、Apply 记录节奏、延期项管理（deferred work management）和 handoff 检查顺序
+- 关键决策：
+  - 采用方案 B：只改顶层 `devflow` 技能、references、templates、`devflow-handoff.md` 与当前 mission 记录
+  - 不修改 OpenSpec / Superpowers 子技能（sub-skills）
+  - 不修改旧版 `skills/all-skills/devflow-v1`
+  - 不新增评测资产（Evaluation assets）
+- 风险与阻塞：
+  - 子技能协同与评测资产（Evaluation assets）仍未纳入本轮
+- 立即下一步：
+  - 询问用户是否需要提交代码
+  - 如继续优化，先重新对齐子技能协同或评测资产范围
+- 相关文件与证据：
+  - `.codex/skills/devflow/SKILL.md`
+  - `.codex/skills/devflow/references/recording-rules.md`
+  - `.codex/skills/devflow/references/workspace-and-templates.md`
+  - `.codex/skills/devflow/assets/templates/origin-template.md`
+  - `.codex/skills/devflow/assets/templates/backlog-template.md`
+  - `.codex/skills/devflow/assets/templates/deferred-template.md`
+  - `devflow-handoff.md`
+  - 关键词落点搜索：`rg -n "origin\\.md|state-history\\.md|backlog\\.md|deferred|Apply 阶段|原始输入|延期项" .codex\skills\devflow devflow-handoff.md .devflow\devflow-skill-optimization`
+  - 冲突搜索：`rg -n "80-120|120 行|创建后不|冻结|每轮推进后至少更新 `state\\.md`|每轮推进后至少更新" .codex\skills\devflow devflow-handoff.md .devflow\devflow-skill-optimization`
+  - 空白检查：`git diff --check`，仅有 LF/CRLF warning，无空白错误

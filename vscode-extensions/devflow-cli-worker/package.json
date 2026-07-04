@@ -1,0 +1,36 @@
+{
+  "name": "devflow-cli-worker",
+  "displayName": "devflow CLI Worker",
+  "description": "Start a visible devflow CLI worker from a macOS VSCode terminal.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:devflowCliWorker.start"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "devflowCliWorker.start",
+        "title": "Start devflow CLI Worker"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "node out/commandBuilder.test.js",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.1.0",
+    "typescript": "^5.5.0"
+  }
+}

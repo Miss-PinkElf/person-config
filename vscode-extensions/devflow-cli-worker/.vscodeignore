@@ -1,0 +1,6 @@
+node_modules/**
+src/**
+src/**/*.test.ts
+out/**/*.test.js
+out/**/*.test.js.map
+*.vsix

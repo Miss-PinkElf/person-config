@@ -1,0 +1,217 @@
+{
+  "name": "vscode-controlled-explorer",
+  "displayName": "Controlled Explorer",
+  "description": "A controlled second explorer driven by JSON roots.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:controlledExplorer.view",
+    "onCommand:controlledExplorer.addFromExplorer"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "controlledExplorer",
+          "title": "受控文件",
+          "icon": "media/controlled-explorer.svg"
+        }
+      ]
+    },
+    "views": {
+      "controlledExplorer": [
+        {
+          "id": "controlledExplorer.view",
+          "name": "受控文件",
+          "contextualTitle": "受控文件"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "controlledExplorer.refresh",
+        "title": "刷新受控文件",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "controlledExplorer.openProjectConfig",
+        "title": "打开项目配置",
+        "icon": "$(json)"
+      },
+      {
+        "command": "controlledExplorer.openGlobalConfig",
+        "title": "打开全局配置",
+        "icon": "$(globe)"
+      },
+      {
+        "command": "controlledExplorer.openNode",
+        "title": "打开"
+      },
+      {
+        "command": "controlledExplorer.revealInFinder",
+        "title": "在系统文件管理器中显示",
+        "icon": "$(go-to-file)"
+      },
+      {
+        "command": "controlledExplorer.newFile",
+        "title": "新建文件",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "controlledExplorer.newFolder",
+        "title": "新建文件夹",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "controlledExplorer.rename",
+        "title": "重命名",
+        "icon": "$(edit)"
+      },
+      {
+        "command": "controlledExplorer.trash",
+        "title": "删除到废纸篓",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "controlledExplorer.copyAbsolutePath",
+        "title": "复制绝对路径",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "controlledExplorer.copyRelativePath",
+        "title": "复制相对路径",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "controlledExplorer.sendPathToTerminal",
+        "title": "发送路径到终端",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "controlledExplorer.openInTerminal",
+        "title": "在终端中打开",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "controlledExplorer.removeRoot",
+        "title": "从受控文件移除",
+        "icon": "$(x)"
+      },
+      {
+        "command": "controlledExplorer.addFromExplorer",
+        "title": "添加到受控文件",
+        "icon": "$(add)"
+      },
+      {
+        "command": "controlledExplorer.setDefaultSort",
+        "title": "按默认方式排序",
+        "icon": "$(list-tree)"
+      },
+      {
+        "command": "controlledExplorer.setFrequencySort",
+        "title": "按打开频率排序",
+        "icon": "$(pulse)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "controlledExplorer.refresh",
+          "when": "view == controlledExplorer.view",
+          "group": "navigation"
+        },
+        {
+          "command": "controlledExplorer.openProjectConfig",
+          "when": "view == controlledExplorer.view",
+          "group": "navigation"
+        },
+        {
+          "command": "controlledExplorer.openGlobalConfig",
+          "when": "view == controlledExplorer.view",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "controlledExplorer.removeRoot",
+          "when": "view == controlledExplorer.view && viewItem =~ /root/",
+          "group": "inline"
+        },
+        {
+          "command": "controlledExplorer.openNode",
+          "when": "view == controlledExplorer.view && viewItem =~ /file/",
+          "group": "navigation@1"
+        },
+        {
+          "command": "controlledExplorer.revealInFinder",
+          "when": "view == controlledExplorer.view && viewItem =~ /resource/",
+          "group": "navigation@2"
+        },
+        {
+          "command": "controlledExplorer.newFile",
+          "when": "view == controlledExplorer.view && viewItem =~ /folder/",
+          "group": "create@1"
+        },
+        {
+          "command": "controlledExplorer.newFolder",
+          "when": "view == controlledExplorer.view && viewItem =~ /folder/",
+          "group": "create@2"
+        },
+        {
+          "command": "controlledExplorer.rename",
+          "when": "view == controlledExplorer.view && viewItem =~ /resource/",
+          "group": "edit@1"
+        },
+        {
+          "command": "controlledExplorer.trash",
+          "when": "view == controlledExplorer.view && viewItem =~ /resource/",
+          "group": "edit@2"
+        },
+        {
+          "command": "controlledExplorer.copyAbsolutePath",
+          "when": "view == controlledExplorer.view && viewItem =~ /resource/",
+          "group": "copy@1"
+        },
+        {
+          "command": "controlledExplorer.copyRelativePath",
+          "when": "view == controlledExplorer.view && viewItem =~ /resource/",
+          "group": "copy@2"
+        },
+        {
+          "command": "controlledExplorer.sendPathToTerminal",
+          "when": "view == controlledExplorer.view && viewItem =~ /resource/",
+          "group": "terminal@1"
+        },
+        {
+          "command": "controlledExplorer.openInTerminal",
+          "when": "view == controlledExplorer.view && viewItem =~ /folder/",
+          "group": "terminal@2"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "controlledExplorer.addFromExplorer",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "npm run compile && node out/pathUtils.test.js && node out/configModel.test.js && node out/frequencyService.test.js",
+    "package": "vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.1.0",
+    "typescript": "^5.5.0"
+  }
+}

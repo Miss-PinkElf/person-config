@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "roots": [
+    {
+      "type": "group",
+      "name": "常用文档",
+      "children": [
+        {
+          "type": "file",
+          "path": "README.md"
+        },
+        {
+          "type": "folder",
+          "path": "docs"
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "path": "src"
+    },
+    {
+      "type": "file",
+      "path": "package.json"
+    }
+  ]
+}

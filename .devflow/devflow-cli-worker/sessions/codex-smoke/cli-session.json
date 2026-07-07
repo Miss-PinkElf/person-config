@@ -1,0 +1,11 @@
+{
+  "workerId": "codex-smoke",
+  "command": "codex",
+  "visualMode": "terminal",
+  "status": "killed",
+  "tmuxSessionName": "devflow-worker-codex-smoke",
+  "relativeSessionPath": ".devflow/devflow-cli-worker/sessions/codex-smoke",
+  "relativeResultPath": ".devflow/devflow-cli-worker/sessions/codex-smoke/result.md",
+  "createdAt": "2026-07-07T04:37:06.983Z",
+  "updatedAt": "2026-07-07T04:48:04.952Z"
+}

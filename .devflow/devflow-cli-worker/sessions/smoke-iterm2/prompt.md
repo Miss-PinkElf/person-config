@@ -1,0 +1,1 @@
+printf 'iterm2 smoke ok\n' > .devflow/devflow-cli-worker/sessions/smoke-iterm2/result.md

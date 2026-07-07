@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { buildStartWorkerCommand, sanitizeWorkerId } from "./commandBuilder";
 
 const START_COMMAND = "devflowCliWorker.start";
-const CLI_RELATIVE_PATH = "tools/devflow-cli-worker/bin/devflow-worker.mjs";
+const CLI_RELATIVE_PATH = ".codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs";
 
 export function activate(context: vscode.ExtensionContext): void {
   const disposable = vscode.commands.registerCommand(START_COMMAND, startWorker);

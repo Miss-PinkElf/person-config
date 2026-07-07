@@ -16,7 +16,7 @@
 4. 插件会新开终端，启动 worker，并 attach 到对应 tmux（tmux）会话：
 
 ```bash
-node tools/devflow-cli-worker/bin/devflow-worker.mjs start-in-vscode --id <worker-id> --command codex && tmux attach -t devflow-worker-<worker-id>
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start-in-vscode --id <worker-id> --command codex && tmux attach -t devflow-worker-<worker-id>
 ```
 
 ## 安装包

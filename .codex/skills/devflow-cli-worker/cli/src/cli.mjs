@@ -4,9 +4,16 @@ import { createSessionStore } from "./session-store.mjs";
 import { createTmuxDriver } from "./tmux-driver.mjs";
 import { waitForStableScreen } from "./wait-agent.mjs";
 
+const USAGE_TEXT = "可用命令：start、start-in-vscode、send、paste、capture、get-info、wait-agent、interrupt、key、kill、status、transcript。\n";
+
 export async function runCli(argv, options) {
   const context = createContext(options);
   const [command, ...rest] = argv;
+
+  if (command === "--help" || command === "-h" || command === "help") {
+    context.stdout.write(USAGE_TEXT);
+    return;
+  }
 
   if (command === "start") return start(rest, context, "terminal");
   if (command === "start-in-vscode") return start(rest, context, "vscode");
@@ -21,7 +28,7 @@ export async function runCli(argv, options) {
   if (command === "status") return status(rest, context);
   if (command === "transcript") return transcript(rest, context);
 
-  throw new Error("未知命令。可用命令：start、start-in-vscode、send、paste、capture、get-info、wait-agent、interrupt、key、kill、status、transcript。");
+  throw new Error(`未知命令。${USAGE_TEXT.trim()}`);
 }
 
 function createContext(options) {

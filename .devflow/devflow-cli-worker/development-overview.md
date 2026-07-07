@@ -25,32 +25,38 @@
 
 ### Apply（实施）
 
-- 实现 CLI：`tools/devflow-cli-worker/`
+- 实现 CLI：`.codex/skills/devflow-cli-worker/cli/`（初版曾位于 `tools/devflow-cli-worker/`，2026-07-07 已归并进 Skill 主包）
 - 实现 Skill：`.codex/skills/devflow-cli-worker/`
 - 实现 VSCode 插件入口：`vscode-extensions/devflow-cli-worker/`
 - 打包 VSIX：`vscode-extensions/devflow-cli-worker/devflow-cli-worker-0.1.0.vsix`
 
 ### Verify / Close（验证与收口）
 
-已在 Windows 环境完成：
+已完成自动化验证：
 
-- `npm --prefix tools/devflow-cli-worker test`
+- `npm --prefix .codex/skills/devflow-cli-worker/cli test`
 - `npm --prefix vscode-extensions/devflow-cli-worker run compile`
 - `npm --prefix vscode-extensions/devflow-cli-worker test`
 - `npm --prefix vscode-extensions/devflow-cli-worker run package`
+- `node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs --help`
 
-尚需在 macOS 环境补跑真实终端冒烟验证。
+已在真实 macOS 完成 CLI + Skill 主链路冒烟验证：
+
+- iTerm2（iTerm2）可见终端启动与 tmux（tmux）attach 成功。
+- Codex CLI（Codex CLI）worker 启动成功。
+- `/clear` 清空上下文后进入新对话，Context 回到 100%。
+- 新对话中写入 result.md（Result File）成功，内容为 `codex worker smoke ok`。
 
 ## 关键决策
 
 - 使用 tmux（tmux）作为 worker 控制层，外部终端和 VSCode 内置终端作为可见入口。
-- Skill（Skill）只负责使用规程，不承载控制逻辑。
+- Skill（Skill）目录作为完整能力包主目录，CLI（Command Line Interface）放在 `.codex/skills/devflow-cli-worker/cli/`。
 - VSCode 插件第一版只做入口，不做 worker 管理 UI（User Interface）。
 - Windows / WSL 入口作为明确延期项，写入 `deferred/vscode-wsl-worker-entry.md`。
 
 ## 当前开放问题
 
-- macOS 上 tmux、Terminal.app / iTerm2、VSCode 内置终端真实链路尚未验证。
+- VSCode 插件（VSCode Extension）命令面板触发内置终端的人工 UI 验证仍可后续补跑；CLI + Skill 主链路已通过。
 - 是否补 `--prompt-file` 支持，避免复杂 prompt 通过命令行参数传递。
 - 是否补 VSCode 插件的 repository / LICENSE 分发元数据。
 

@@ -29,3 +29,15 @@
 - 背景：用户确认 macOS 上的 VSCode 插件（VSCode Extension）需要写，用于在 VSCode 里启动终端。
 - 决策：macOS VSCode 插件入口进入本轮；范围限定为新开 VSCode 内置终端（VSCode Integrated Terminal）并启动 worker。
 - 原因：这属于 macOS 使用入口，不等同于 Windows / WSL 入口；管理 UI（User Interface）、状态列表、result.md 打开和轮询提醒仍延期。
+
+## 2026-07-07：Skill 目录作为完整能力包主目录
+
+- 背景：用户认为 CLI（Command Line Interface）与 Skill（Skill）分散在 `tools/` 和 `.codex/skills/` 下不够直观，希望 CLI + Skill 放在一起。
+- 决策：将 CLI 从 `tools/devflow-cli-worker/` 迁入 `.codex/skills/devflow-cli-worker/cli/`，让 Skill 目录成为完整能力包主目录；VSCode 插件（VSCode Extension）继续独立作为安装入口，但引用新的 CLI 路径。
+- 原因：这能让使用者从一个 Skill 包理解完整能力，同时保留 VSCode 插件作为独立可打包产物，避免把安装产物塞进 Skill 主目录。
+
+## 2026-07-07：Codex TUI 使用 send + key Enter 作为稳定提交规程
+
+- 背景：真实 macOS 冒烟验证中，`send` 能将文本输入 Codex CLI TUI（Codex CLI Terminal UI），但不总是立即触发提交。
+- 决策：不改变 `send` 的默认行为；在 Skill 使用说明中记录：对 Codex CLI TUI，如果 `send` 后文本未提交，继续执行 `key <worker-id> Enter`。
+- 原因：普通 shell 和其它 TUI（Terminal UI）仍可依赖 `send` 的现有语义；Codex TUI 的额外 Enter 属于使用规程差异，不应为了单一 TUI 破坏通用 CLI 行为。

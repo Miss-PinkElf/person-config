@@ -13,6 +13,8 @@
 | 3 | 用户补充：Windows 范围收窄 | 2026-07-04 | 明确不做 PowerShell（pwsh）和 Windows 外部终端，后续使用 WSL（Windows Subsystem for Linux） | 已吸收到决策日志 |
 | 4 | 用户补充：VSCode 插件延期 | 2026-07-04 | 明确 VSCode 插件（VSCode Extension）第一版只需新开 WSL 终端并启动 worker，但本轮先做 macOS，WSL / VSCode 作为延期项 | 已写入 deferred |
 | 5 | 用户收尾指令：上下文过长，生成 handoff 并直接提交 | 2026-07-05 | 要求回顾本次对话、更新未收口文档、生成交接并提交当前 mission 相关文件 | 已吸收到 handoff 与收口记录 |
+| 6 | 用户补充：CLI + Skill 放在一起 | 2026-07-07 | 选择方案 1，将 CLI（Command Line Interface）移入 `.codex/skills/devflow-cli-worker/cli/`，让 Skill（Skill）目录成为完整能力包主目录 | 已吸收到 plan、Skill、VSCode 插件路径和检查点 |
+| 7 | 用户补充：用 CLI 验证 Codex worker | 2026-07-07 | 明确优先测试 CLI + Skill 主路径：启动 Codex CLI（Codex CLI）、发送 `/clear`、新开对话并写入 result.md（Result File） | 已吸收到 bug-log、state、checkpoint 与 handoff |
 
 ## 备注
 

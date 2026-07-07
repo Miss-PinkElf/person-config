@@ -16,6 +16,16 @@ const fakeTmux = {
 const fakeTerminal = { open: async () => {} };
 
 try {
+  await runCli(["--help"], {
+    cwd: root,
+    stdout: { write: (text) => output.push(text) },
+    stderr: { write: (text) => output.push(text) },
+    tmux: fakeTmux,
+    terminal: fakeTerminal
+  });
+
+  ok(output.join("").includes("可用命令：start、start-in-vscode"));
+
   await runCli(["start", "--id", "alpha", "--command", "codex", "--prompt", "原始提示词"], {
     cwd: root,
     stdout: { write: (text) => output.push(text) },

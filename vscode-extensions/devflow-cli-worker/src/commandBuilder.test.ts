@@ -7,11 +7,11 @@ equal(sanitizeWorkerId(""), "worker");
 const command = buildStartWorkerCommand({
   workspacePath: "/Users/demo/project",
   workerId: "macos-worker",
-  cliRelativePath: "tools/devflow-cli-worker/bin/devflow-worker.mjs"
+  cliRelativePath: ".codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs"
 });
 
 ok(command.includes("cd '/Users/demo/project'"));
-ok(command.includes("node tools/devflow-cli-worker/bin/devflow-worker.mjs start-in-vscode --id macos-worker"));
+ok(command.includes("node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start-in-vscode --id macos-worker"));
 ok(command.includes("tmux attach -t devflow-worker-macos-worker"));
 
 console.log("commandBuilder tests passed");

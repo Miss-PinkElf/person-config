@@ -31,3 +31,20 @@
 - 关键决策：本轮主线聚焦 macOS 完整实现；WSL（Windows Subsystem for Linux）与 VSCode 插件（VSCode Extension）保持延期。
 - 风险与阻塞：进入实现前仍必须完成 Plan（计划）和重型路径 spec 三件套。
 - 立即下一步：进入 Plan 阶段，写实施计划。
+
+## 2026-07-04 Apply 实施完成
+
+- 当前路径与阶段：重型路径（Heavy Path） / Apply（实施）完成，准备进入 Verify / Close（验证 / 收口）。
+- 本轮完成内容：实现 `tools/devflow-cli-worker/` macOS CLI（CLI）、`.codex/skills/devflow-cli-worker/` Worker Skill（Worker Skill）、`vscode-extensions/devflow-cli-worker/` macOS VSCode 插件入口（VSCode Extension Entry）。
+- 关键决策：当前环境只声明 Windows 可执行的逻辑/编译验证通过；tmux（tmux）与 macOS 终端真实冒烟验证不在 Windows 上伪装完成。
+- 风险与阻塞：需要在 Mac 上补跑 Terminal.app / iTerm2 / VSCode 内置终端真实启动验证。
+- 立即下一步：执行完成前验证门禁并向用户汇总结果。
+
+## 2026-07-04 Verify / Close 收口
+
+- 当前路径与阶段：重型路径（Heavy Path） / Verify / Close（验证 / 收口）。
+- 本轮完成内容：完成 macOS CLI（CLI）、Worker Skill（Worker Skill）、macOS VSCode 插件入口（VSCode Extension Entry）和 VSIX（VSCode Extension Package）打包。
+- 关键决策：Windows 环境只作为逻辑、编译和打包验证环境；macOS 真实 tmux（tmux）与终端交互不伪装验证完成。
+- 验证证据：2026-07-05 收尾复核中，`npm --prefix tools/devflow-cli-worker test`、`npm --prefix vscode-extensions/devflow-cli-worker run compile`、`npm --prefix vscode-extensions/devflow-cli-worker test`、`npm --prefix vscode-extensions/devflow-cli-worker run package` 均已通过；Skill 触发语检查命中。
+- 风险与阻塞：VSIX 打包有非阻断警告：缺少 `repository` 字段和 LICENSE 文件；Mac 冒烟验证尚需在 macOS 环境执行。
+- 立即下一步：询问用户是否需要提交代码。

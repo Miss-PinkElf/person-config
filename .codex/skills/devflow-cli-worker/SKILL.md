@@ -28,7 +28,7 @@ description: |
 4. 运行：
 
 ```bash
-node tools/devflow-cli-worker/bin/devflow-worker.mjs start --id research-a --command codex --prompt "<assembled prompt>"
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start --id research-a --command codex --prompt "<assembled prompt>"
 ```
 
 ## 观察与控制
@@ -36,19 +36,25 @@ node tools/devflow-cli-worker/bin/devflow-worker.mjs start --id research-a --com
 优先使用轻量轮询：
 
 ```bash
-node tools/devflow-cli-worker/bin/devflow-worker.mjs get-info research-a --tail 5
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs get-info research-a --tail 5
 ```
 
 需要发送下一步指令：
 
 ```bash
-node tools/devflow-cli-worker/bin/devflow-worker.mjs send research-a "继续执行下一步，并把结论写入 result.md"
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs send research-a "继续执行下一步，并把结论写入 result.md"
+```
+
+Codex CLI TUI（Codex CLI Terminal UI）实测注意：如果 `send` 后文本只出现在输入行但未提交，继续发送一次 Enter（Enter Key）：
+
+```bash
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs key research-a Enter
 ```
 
 需要等待但不能盲等：
 
 ```bash
-node tools/devflow-cli-worker/bin/devflow-worker.mjs wait-agent research-a --timeout 1200 --poll 15 --stale 30
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs wait-agent research-a --timeout 1200 --poll 15 --stale 30
 ```
 
 ## 多 worker 并行
@@ -58,8 +64,8 @@ node tools/devflow-cli-worker/bin/devflow-worker.mjs wait-agent research-a --tim
 推荐循环读取：
 
 ```bash
-node tools/devflow-cli-worker/bin/devflow-worker.mjs get-info worker-a --tail 5
-node tools/devflow-cli-worker/bin/devflow-worker.mjs get-info worker-b --tail 5
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs get-info worker-a --tail 5
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs get-info worker-b --tail 5
 ```
 
 ## 收回结果

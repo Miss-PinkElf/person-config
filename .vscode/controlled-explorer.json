@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "roots": [
+    {
+      "type": "folder",
+      "path": ".devflow"
+    },
+    {
+      "type": "file",
+      "path": ".devflow/vscode-controlled-explorer/NEXT-SESSION-PROMPT-vscode-controlled-explorer.md"
+    },
+    {
+      "type": "file",
+      "path": "zzz-cmd.md"
+    }
+  ]
+}

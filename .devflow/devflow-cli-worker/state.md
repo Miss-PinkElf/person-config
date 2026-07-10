@@ -14,7 +14,7 @@
 - 延期项：`deferred/vscode-wsl-worker-entry.md`
 - 最新 handoff：`handoffs/2026-07-10-003-vscode-bridge-and-codex-input.md`
 - 下次恢复提示词：`NEXT-SESSION-PROMPT-devflow-cli-worker.md`
-- 收口提交：本轮相关代码与文档待按用户明确授权提交。
+- 收口提交：`d3d2248`（完善VSCode可见Worker桥接与Codex输入控制）。
 
 ## 已确认范围
 

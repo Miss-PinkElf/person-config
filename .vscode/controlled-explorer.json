@@ -6,6 +6,10 @@
       "path": ".devflow"
     },
     {
+      "type": "folder",
+      "path": "zzz-prompt-debug/不让subagent黑盒"
+    },
+    {
       "type": "file",
       "path": ".devflow/vscode-controlled-explorer/NEXT-SESSION-PROMPT-vscode-controlled-explorer.md"
     },

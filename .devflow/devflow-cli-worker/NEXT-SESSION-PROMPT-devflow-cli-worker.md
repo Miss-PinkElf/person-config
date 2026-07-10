@@ -21,7 +21,7 @@ macOS devflow CLI Worker（devflow CLI Worker）已完成 VSCode attach 桥接�
 
 1. 如需增强，先从 `backlog.md` 选择菜单型 slash 命令自动化、`--prompt-file`、显式确认的会话管理 UI 或 VSIX 分发元数据，并先进入 Align（需求对齐）。
 2. Windows / WSL 范围继续延期，除非用户明确重新进入 Align。
-3. 不在 session 附件上直接试错；当前正常 worker 是 `clear-task-test-20260710` 与 `macos-worker`，对应附件未跟踪且不提交。
+3. 上轮已清理所有测试 worker 与 session 附件；需要使用时重新启动 `macos-worker`，不要依赖不存在的运行时状态。
 
 ## 恢复顺序
 

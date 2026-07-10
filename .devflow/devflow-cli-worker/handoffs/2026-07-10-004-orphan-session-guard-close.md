@@ -16,7 +16,7 @@
 
 - Worker CLI（Worker CLI）实现、单元测试、真实 tmux 回归、Skill（Skill）与 README 文档均已完成。
 - 已创建本轮提交（修复孤立tmux会话误复用）；准确提交标识以 `git log -1` 为准。提交仅包含 Worker Skill、CLI 与 `.devflow/devflow-cli-worker/` 文档，不包含 session 附件或用户配置。
-- 当前正常 tmux worker：`clear-task-test-20260710`、`macos-worker`；两者都有 cli-session.json，附件未跟踪且不应提交。
+- 交接创建后用户要求清理运行时资源；`clear-task-test-20260710`、`macos-worker` 和对应 session 附件均已删除。下次使用时需重新启动 worker。
 
 ## 本轮完成内容
 

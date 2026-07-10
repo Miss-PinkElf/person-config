@@ -41,3 +41,13 @@
 - 背景：真实 macOS 冒烟验证中，`send` 能将文本输入 Codex CLI TUI（Codex CLI Terminal UI），但不总是立即触发提交。
 - 决策：不改变 `send` 的默认行为；在 Skill 使用说明中记录：对 Codex CLI TUI，如果 `send` 后文本未提交，继续执行 `key <worker-id> Enter`。
 - 原因：普通 shell 和其它 TUI（Terminal UI）仍可依赖 `send` 的现有语义；Codex TUI 的额外 Enter 属于使用规程差异，不应为了单一 TUI 破坏通用 CLI 行为。
+
+## 2026-07-10：CLI 直连 tmux，VSCode 插件仅负责可见 attach
+
+- 决策：新增 Unix Socket（Unix 域套接字）桥接和 `open-in-vscode`；CLI 继续直接控制 tmux（tmux）的 worker 生命周期、提示词、Bash 命令与轮询，插件只创建或聚焦 VSCode 内置终端（VSCode Integrated Terminal）。
+- 原因：VSCode Terminal API（VSCode Terminal API）不能读取普通终端缓冲区；将控制层留在 tmux 可保留稳定轮询与 result.md（Result File）回收。
+
+## 2026-07-10：Codex 文本输入采用 tmux 字面量发送
+
+- 决策：tmux Driver（tmux Driver）使用 `send-keys -l` 输入文本，并在短暂等待后发送 Enter；`clear` 独立确认 Context 100%，`command` 区分直接执行的 slash 命令。
+- 原因：未使用字面量模式时 `/clear` 虽会进入输入框，却不能稳定提交；菜单型 slash 命令不应被自动额外确认。

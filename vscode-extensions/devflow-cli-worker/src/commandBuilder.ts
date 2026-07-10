@@ -5,10 +5,27 @@ export interface BuildStartWorkerCommandInput {
 }
 
 export function buildStartWorkerCommand(input: BuildStartWorkerCommandInput): string {
+  return buildWorkerCommand(input, "start-in-vscode");
+}
+
+export function buildEnsureWorkerCommand(input: BuildStartWorkerCommandInput): string {
+  return buildWorkerCommand(input, "ensure-in-vscode");
+}
+
+export function buildAttachWorkerCommand(input: Pick<BuildStartWorkerCommandInput, "workspacePath" | "workerId">): string {
+  return [
+    `cd ${quoteForShell(input.workspacePath)}`,
+    `tmux set-option -t devflow-worker-${input.workerId} mouse on`,
+    `tmux attach -t devflow-worker-${input.workerId}`
+  ].join(" && ");
+}
+
+function buildWorkerCommand(input: BuildStartWorkerCommandInput, cliCommand: string): string {
   const tmuxSessionName = `devflow-worker-${input.workerId}`;
   return [
     `cd ${quoteForShell(input.workspacePath)}`,
-    `node ${input.cliRelativePath} start-in-vscode --id ${input.workerId} --command codex`,
+    `node ${input.cliRelativePath} ${cliCommand} --id ${input.workerId} --command codex`,
+    `tmux set-option -t ${tmuxSessionName} mouse on`,
     `tmux attach -t ${tmuxSessionName}`
   ].join(" && ");
 }

@@ -12,6 +12,8 @@ description: |
 
 本技能默认只覆盖 macOS。Windows 原生、PowerShell（pwsh）、WSL（Windows Subsystem for Linux）和 Windows / WSL VSCode 入口不在本轮范围内。
 
+macOS VSCode 插件（VSCode Extension）安装后，打开工作区会自动创建 `devflow worker: macos-worker` 内置终端（VSCode Integrated Terminal）。该终端使用 `ensure-in-vscode`：已有 `devflow-worker-macos-worker` tmux 会话时直接 attach，不会启动第二个 Codex CLI（Codex CLI）worker。命令面板的 `Start devflow CLI Worker` 保留给额外 worker id。
+
 ## 核心原则
 
 - 保留用户原始提示词（Original Prompt），不要改写。
@@ -25,11 +27,25 @@ description: |
 1. 选择 worker id，例如 `research-a`。
 2. 读取 `references/prompt-template.md`。
 3. 组装 prompt，明确写入 result.md 相对路径。
-4. 运行：
+4. 在 VSCode 场景依次运行，以创建新 worker 和新内置终端：
 
 ```bash
-node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start --id research-a --command codex --prompt "<assembled prompt>"
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start-and-open-in-vscode --id research-a --command codex --prompt "<assembled prompt>"
 ```
+
+需要在脚本或插件中确保默认 VSCode worker 已启动时，运行：
+
+```bash
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs ensure-in-vscode --id macos-worker --command codex
+```
+
+需要在 VSCode 中显示已运行的指定 worker 时，运行：
+
+```bash
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs open-in-vscode --id research-a
+```
+
+该命令只请求插件创建或聚焦 attach 终端；提示词、`/clear`、Bash 命令和轮询继续由 Worker CLI（Worker CLI）直接控制 tmux（tmux）。
 
 ## 观察与控制
 
@@ -39,17 +55,21 @@ node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start --id rese
 node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs get-info research-a --tail 5
 ```
 
-需要发送下一步指令：
+Codex CLI（Codex CLI）发送下一步指令时，使用 `send`；它会在同一操作内输入并提交：
 
 ```bash
 node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs send research-a "继续执行下一步，并把结论写入 result.md"
 ```
 
-Codex CLI TUI（Codex CLI Terminal UI）实测注意：如果 `send` 后文本只出现在输入行但未提交，继续发送一次 Enter（Enter Key）：
+新开 Codex 对话使用 `clear <worker-id>`；不要再手工组合 `/clear` 与 Enter。
+
+直接执行的 slash 命令使用 `command`，只输入并提交一次：
 
 ```bash
-node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs key research-a Enter
+node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs command research-a "/compact"
 ```
+
+会打开菜单或需要确认的 slash 命令，使用 `paste` 输入命令，读取屏幕后再显式使用 `key` 选择；不要自动发送额外 Enter。
 
 需要等待但不能盲等：
 

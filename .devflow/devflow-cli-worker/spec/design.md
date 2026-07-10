@@ -4,7 +4,7 @@
 
 本轮由三个模块组成：
 
-1. macOS Worker CLI（macOS Worker CLI）：位于 `tools/devflow-cli-worker/`，负责 session 文件、tmux 控制、macOS 外部终端和轮询。
+1. macOS Worker CLI（macOS Worker CLI）：位于 `.codex/skills/devflow-cli-worker/cli/`，负责 session 文件、tmux 控制、macOS 外部终端和轮询。
 2. Worker Skill（Worker Skill）：位于 `.codex/skills/devflow-cli-worker/`，负责指导主 Agent（Main Agent）使用 CLI worker。
 3. macOS VSCode 插件入口（macOS VSCode Extension Entry）：位于 `vscode-extensions/devflow-cli-worker/`，负责在 VSCode 内置终端启动 CLI。
 
@@ -28,6 +28,7 @@
 - `sendKey`
 - `capturePane`
 - `killSession`
+- `hasSession`
 
 该模块只做命令封装，不负责业务状态。
 
@@ -54,6 +55,8 @@
 
 - `start` 创建 session、启动 tmux、发送 prompt、打开外部终端。
 - `start-in-vscode` 创建 session、启动 tmux、发送 prompt，但不打开外部终端。
+- `ensure-in-vscode` 检查指定 tmux session；存在时不覆盖 session 附件并输出复用状态，不存在时复用 `start-in-vscode` 的创建流程。
+- `open-in-vscode` 先检查 tmux session，再通过 Bridge Client（Bridge Client）请求 VSCode 插件创建或聚焦 attach 终端。
 - `capture` 写入 `screen.txt`。
 - `get-info` 输出结构化 JSON。
 - `wait-agent` 输出结构化 JSON。
@@ -72,23 +75,25 @@ Skill（Skill）不实现控制逻辑，只规定主 Agent 使用 CLI 的流程�
 
 插件使用 VSCode Extension API（VSCode Extension API）：
 
-- 注册 `devflowCliWorker.start` 命令。
-- 提示用户输入 worker id。
-- 使用 `vscode.window.createTerminal` 创建终端。
-- 发送 `node tools/devflow-cli-worker/bin/devflow-worker.mjs start-in-vscode --id <worker-id> --command codex && tmux attach -t devflow-worker-<worker-id>`。
+- 使用 `onStartupFinished` 激活；打开工作区后调用 `ensure-in-vscode --id macos-worker --command codex`。
+- 使用 `vscode.window.createTerminal` 创建并显示 `devflow worker: macos-worker` 终端，终端 attach 到 `devflow-worker-macos-worker`。
+- 注册并保留 `devflowCliWorker.start` 命令；该手动入口提示用户输入 worker id，并调用 `start-in-vscode` 以创建额外 worker。
+- 在 `.devflow/devflow-cli-worker/vscode-bridge.sock` 启动 Unix Socket（Unix 域套接字）服务；接收单行 `{"action":"attach","workerId":"<id>"}` 请求，创建或聚焦 `devflow worker: <id>` 并返回单行 JSON 响应。
+- 插件仅处理 attach；CLI 继续直接使用 tmux（tmux）发送 `/clear`、提示词与 Bash 命令，并获取轮询状态。
 
 插件第一版不管理 worker 状态，不打开 result.md，不做 Windows / WSL 适配。
 
 ## 数据流
 
 1. 主 Agent 或 VSCode 插件调用 CLI。
-2. CLI 创建 session 文件。
-3. CLI 创建 tmux session。
+2. `ensure-in-vscode` 检查 tmux session；不存在时才创建 session 文件与 tmux session，存在时直接复用。
+3. CLI 创建 tmux session 或返回复用状态。
 4. CLI 发送 prompt。
 5. 用户在可见终端中观察或介入。
 6. 主 Agent 使用 `get-info` / `wait-agent` 轮询。
 7. worker 把结果写入 `result.md`。
 8. 主 Agent 读取 result.md 并整合回当前 devflow mission。
+9. 主 Agent 需要在 VSCode 显示指定 worker 时，调用 `open-in-vscode`；CLI 请求插件 attach，但不转移 tmux 控制权。
 
 ## 验证策略
 

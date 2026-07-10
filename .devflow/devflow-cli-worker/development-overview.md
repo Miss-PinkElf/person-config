@@ -60,6 +60,14 @@
 - 是否补 `--prompt-file` 支持，避免复杂 prompt 通过命令行参数传递。
 - 是否补 VSCode 插件的 repository / LICENSE 分发元数据。
 
+## 2026-07-10：VSCode 桥接与 Codex 输入收敛
+
+- VSCode 插件从单纯命令面板入口扩展为 Unix Socket（Unix 域套接字）attach 桥接：CLI 可启动 tmux worker 后请求插件创建或聚焦对应终端。
+- 新增单命令 `start-and-open-in-vscode`，默认可见工作流不再需要手动命令面板或 `osascript`。
+- tmux session 默认启用 `mouse on`，供 VSCode 终端滚动与鼠标交互。
+- 经真实 Codex 多轮验证，文本发送采用字面量输入和受控 Enter；`clear` 以 Context 100% 为成功条件。
+- 菜单型 slash 命令自动化明确延期，避免自动确认造成误选。
+
 ## 推荐读取策略
 
 - 日常恢复：`state.md` + `checkpoints.md`

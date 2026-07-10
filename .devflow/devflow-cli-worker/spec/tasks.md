@@ -10,6 +10,8 @@
 - [x] Task 6：新增 Worker Skill（Worker Skill）
 - [x] Task 7：新增 macOS VSCode 插件入口（macOS VSCode Extension Entry）
 - [x] Task 8：新增 README 并执行验证（README and Verification）
+- [x] Task 9：VSCode 自动启动与会话复用（VSCode Auto Start and Session Reuse）
+- [x] Task 10：VSCode Worker Attach 桥接（VSCode Worker Attach Bridge）
 
 ## 验收标准
 
@@ -20,6 +22,9 @@
 - README 明确 macOS 依赖与 Windows / WSL 限制。
 - macOS iTerm2（iTerm2）与 Codex CLI（Codex CLI）worker 主链路冒烟验证通过。
 - VSCode 插件（VSCode Extension）UI 命令面板触发验证可后续人工补跑，不阻塞 CLI + Skill 主链路收口。
+- VSCode 打开当前工作区后，无需命令面板操作即创建 `devflow worker: macos-worker` 终端；已有 `devflow-worker-macos-worker` tmux（tmux）会话时只 attach、不启动第二个 Codex CLI（Codex CLI）worker。
+- `ensure-in-vscode` 的首次创建与会话复用均由 CLI 单元测试覆盖；插件自动启动命令构造由 TypeScript（TypeScript）测试覆盖。
+- `open-in-vscode` 只对存在的 tmux session 请求 VSCode 插件；插件通过 Unix Socket（Unix 域套接字）创建或聚焦对应 attach 终端，重复请求不创建第二个终端。
 
 ## 验证证据
 
@@ -33,3 +38,4 @@
 - 2026-07-07：`npm --prefix vscode-extensions/devflow-cli-worker run compile`、`npm --prefix vscode-extensions/devflow-cli-worker test`、`npm --prefix vscode-extensions/devflow-cli-worker run package` 通过；VSIX 打包仍有既有非阻断警告：缺少 `repository` 字段和 LICENSE 文件。
 - 2026-07-07：真实 macOS iTerm2（iTerm2）路径通过：`start --id smoke-iterm2 --command bash --terminal iterm` 创建 attached tmux（tmux）会话并写入 result.md。
 - 2026-07-07：真实 Codex CLI（Codex CLI）worker 路径通过：`start --id codex-smoke --command codex --terminal iterm` 启动成功；通过 `send` 输入 `/clear` 并使用 `key Enter` 提交，完成清空上下文、新对话和 result.md 写入。
+- 2026-07-10：安装 `local.devflow-cli-worker@0.1.2` 后，`open-in-vscode --id bridge-smoke` 首次成功创建 VSCode attach 终端，重复调用返回 `reused`；临时 `bridge-smoke` tmux 会话已清理。

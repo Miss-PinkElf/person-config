@@ -16,16 +16,36 @@ export function createTmuxDriver({ execFile = defaultExecFile } = {}) {
   }
 
   return {
+    async hasSession({ sessionName }) {
+      try {
+        await execFile("tmux", ["has-session", "-t", sessionName], { encoding: "utf8" });
+        return true;
+      } catch (error) {
+        if (error.code === 1) {
+          return false;
+        }
+
+        const message = error.code === "ENOENT"
+          ? "未找到 tmux（tmux）。请先在 macOS 上安装 tmux，例如：brew install tmux。"
+          : `tmux 命令失败：${error.message}`;
+        throw new Error(message);
+      }
+    },
+
     async newSession({ sessionName, cwd, command }) {
       await run(["new-session", "-d", "-s", sessionName, "-c", cwd, command]);
     },
 
+    async setMouse({ sessionName }) {
+      await run(["set-option", "-t", sessionName, "mouse", "on"]);
+    },
+
     async sendText({ sessionName, text, submit }) {
-      const args = ["send-keys", "-t", sessionName, text];
+      await run(["send-keys", "-t", sessionName, "-l", text]);
       if (submit) {
-        args.push("Enter");
+        await new Promise((resolve) => setTimeout(resolve, 75));
+        await run(["send-keys", "-t", sessionName, "Enter"]);
       }
-      await run(args);
     },
 
     async sendKey({ sessionName, key }) {

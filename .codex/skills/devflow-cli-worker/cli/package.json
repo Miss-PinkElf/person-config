@@ -7,6 +7,6 @@
     "devflow-worker": "./bin/devflow-worker.mjs"
   },
   "scripts": {
-    "test": "node src/session-store.test.mjs && node src/tmux-driver.test.mjs && node src/macos-terminal.test.mjs && node src/wait-agent.test.mjs && node src/cli.test.mjs"
+    "test": "node src/session-store.test.mjs && node src/tmux-driver.test.mjs && node src/macos-terminal.test.mjs && node src/wait-agent.test.mjs && node src/vscode-bridge.test.mjs && node src/cli.test.mjs"
   }
 }

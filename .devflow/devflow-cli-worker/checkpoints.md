@@ -1,14 +1,5 @@
 # devflow-cli-worker 检查点
 
-## 2026-07-05 上下文交接与提交前收尾
-
-- 当前路径与阶段：重型路径（Heavy Path） / Close（当前轮次收口）。
-- 本轮完成内容：按用户要求读取 `devflow-handoff.md`，补齐 handoff、NEXT-SESSION-PROMPT、bug-log、development-overview，并回写 `state.md` 与 `origin.md`。
-- 关键决策：提交范围限定为本 mission 相关文件和原始需求目录；不提交其它未跟踪文件。
-- 风险与阻塞：macOS 冒烟验证仍未在真实 Mac 环境执行。
-- 提交记录：本提交（提交信息：实现 macOS 可见 CLI Worker 与 VSCode 入口；具体 hash 以 `git log -1` 为准）。
-- 立即下一步：在新对话按 `NEXT-SESSION-PROMPT-devflow-cli-worker.md` 恢复，并在 macOS 环境补跑真实终端冒烟验证。
-
 ## 2026-07-07 Skill + CLI 目录归并
 
 - 当前路径与阶段：重型路径（Heavy Path） / Verify / Close（验证 / 收口）。
@@ -30,3 +21,13 @@
 - 验证证据：`start --id smoke-iterm2 --command bash --terminal iterm` 成功创建 attached tmux 会话并写入 `iterm2 smoke ok`；`start --id codex-smoke --command codex --terminal iterm` 成功启动 Codex CLI；`send codex-smoke "/clear"` + `key codex-smoke Enter` 后 Context 回到 100%；新对话写入 `.devflow/devflow-cli-worker/sessions/codex-smoke/result.md`，内容为 `codex worker smoke ok`。
 - 风险与阻塞：VSCode 插件（VSCode Extension）已安装 VSIX 并通过编译 / 测试，但尚未完成命令面板触发内置终端的人工 UI 验证。
 - 立即下一步：关闭测试 tmux 会话并询问用户是否需要提交代码。
+
+## 2026-07-10 VSCode attach 桥接与 Codex 输入验证
+
+- 当前路径与阶段：重型路径（Heavy Path） / Close（收口）。
+- 本轮完成内容：实现 VSCode attach 桥接、单命令新建可见终端、tmux 鼠标支持、文本字面量发送、`clear` 与 slash 命令分层；最新 VSIX（VSCode Extension Package）为 `0.1.7`。
+- 问题现象：tmux 注入 `/clear` 和普通提示词可能停留在 Codex 输入框；`send + key Enter` 与 `paste + key Enter` 均存在重复提交或两步竞态。
+- 问题原因：tmux 未采用 `send-keys -l` 字面量模式，文本和 Enter 由多个外部调用拆分。
+- 解决方案：Driver 使用字面量发送并在同一操作内受控提交；`clear` 验证 Context 100%，菜单型 slash 命令保留人工选择。
+- 验证证据：CLI 测试、插件编译/测试、VSIX 打包、`git diff --check` 通过；真实 VSCode 与 Codex worker 完成任务 1、清空和任务 2。
+- 立即下一步：提交本轮 mission 相关文件；后续增强从 backlog 单独进入 Align。

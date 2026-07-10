@@ -70,4 +70,18 @@ CLI（Command Line Interface）的 `send` 当前基于 `tmux send-keys <text> En
 
 ### 解决方案
 
-当前不改变 `send` 的默认行为，避免影响普通 shell、bash smoke 和其它 TUI（Terminal UI）。在 `.codex/skills/devflow-cli-worker/SKILL.md` 中补充 Codex CLI TUI 使用规则：如果 `send` 后文本只出现在输入行但未提交，继续执行 `key <worker-id> Enter`。本轮 `/clear` 与新对话写入 result.md 均按该方式验证通过。
+该结论已在 2026-07-10 被更新：tmux Driver（tmux Driver）改用 `send-keys -l` 字面量模式输入文本，并在短暂等待后发送 Enter。`send` 负责普通提示词，`clear` 负责 `/clear` 并验证 Context 100%，不再要求 Skill（Skill）执行额外 Enter。
+
+## 2026-07-10：slash 命令与 tmux 文本注入不稳定
+
+### 问题现象
+
+`paste /clear` 与独立 `key Enter` 在真实 Codex CLI（Codex CLI）会话中缺乏原子性和可追溯确认：命令会记录为已粘贴，但 Context 不一定清空；普通文本注入也可能停留在输入框。
+
+### 问题原因
+
+旧 tmux Driver（tmux Driver）未使用 `send-keys -l`，slash 文本可能受到键名解析或输入缓冲影响；将文本和 Enter 分成多个 CLI 调用又会放大时序与操作错误。
+
+### 解决方案
+
+文本改为字面量发送，Driver 在同一 CLI 操作内短暂等待后提交 Enter。新增 `clear`，在 tmux 屏幕出现 `Context 100% left` 前不报告成功；新增 `command` 处理直接执行的 slash 命令，菜单型命令保留人工显式选择。

@@ -1,10 +1,12 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { join } from "node:path";
 import { createMacOSTerminalOpener } from "./macos-terminal.mjs";
 import { createSessionStore } from "./session-store.mjs";
 import { createTmuxDriver } from "./tmux-driver.mjs";
 import { waitForStableScreen } from "./wait-agent.mjs";
+import { requestVscodeAttach } from "./vscode-bridge.mjs";
 
-const USAGE_TEXT = "可用命令：start、start-in-vscode、send、paste、capture、get-info、wait-agent、interrupt、key、kill、status、transcript。\n";
+const USAGE_TEXT = "可用命令：start、start-in-vscode、start-and-open-in-vscode、ensure-in-vscode、open-in-vscode、send、command、paste、clear、capture、get-info、wait-agent、interrupt、key、kill、status、transcript。\n";
 
 export async function runCli(argv, options) {
   const context = createContext(options);
@@ -17,8 +19,13 @@ export async function runCli(argv, options) {
 
   if (command === "start") return start(rest, context, "terminal");
   if (command === "start-in-vscode") return start(rest, context, "vscode");
+  if (command === "start-and-open-in-vscode") return startAndOpenInVscode(rest, context);
+  if (command === "ensure-in-vscode") return ensureInVscode(rest, context);
+  if (command === "open-in-vscode") return openInVscode(rest, context);
   if (command === "send") return send(rest, context, true);
+  if (command === "command") return runSlashCommand(rest, context);
   if (command === "paste") return send(rest, context, false);
+  if (command === "clear") return clearConversation(rest, context);
   if (command === "capture") return capture(rest, context);
   if (command === "get-info") return getInfo(rest, context);
   if (command === "wait-agent") return waitAgent(rest, context);
@@ -38,7 +45,13 @@ function createContext(options) {
     stderr: options.stderr,
     store: createSessionStore({ repoRoot: options.cwd }),
     tmux: options.tmux ?? createTmuxDriver(),
-    terminal: options.terminal ?? createMacOSTerminalOpener()
+    terminal: options.terminal ?? createMacOSTerminalOpener(),
+    bridge: options.bridge ?? {
+      requestAttach: ({ workerId }) => requestVscodeAttach({
+        socketPath: join(options.cwd, ".devflow/devflow-cli-worker/vscode-bridge.sock"),
+        workerId
+      })
+    }
   };
 }
 
@@ -54,6 +67,7 @@ async function start(args, context, visualMode) {
     cwd: context.cwd,
     command
   });
+  await context.tmux.setMouse({ sessionName: session.tmuxSessionName });
 
   if (prompt) {
     await context.tmux.sendText({ sessionName: session.tmuxSessionName, text: prompt, submit: true });
@@ -62,7 +76,7 @@ async function start(args, context, visualMode) {
   if (visualMode === "terminal") {
     await context.terminal.open({
       terminalApp,
-      attachCommand: `tmux attach -t ${session.tmuxSessionName}`
+      attachCommand: `tmux set-option -t ${session.tmuxSessionName} mouse on && tmux attach -t ${session.tmuxSessionName}`
     });
   }
 
@@ -71,12 +85,74 @@ async function start(args, context, visualMode) {
   context.stdout.write(`worker ${id} started\nresult: ${session.relativeResultPath}\n`);
 }
 
+async function ensureInVscode(args, context) {
+  const id = readOption(args, "--id") ?? "macos-worker";
+  const sessionName = `devflow-worker-${id}`;
+
+  if (await context.tmux.hasSession({ sessionName })) {
+    await context.tmux.setMouse({ sessionName });
+    context.stdout.write(`worker ${id} reused\n`);
+    return;
+  }
+
+  await start(args, context, "vscode");
+}
+
+async function startAndOpenInVscode(args, context) {
+  const id = readOption(args, "--id") ?? `worker-${Date.now()}`;
+  await start(args, context, "vscode");
+  await openInVscode(["--id", id], context);
+}
+
+async function openInVscode(args, context) {
+  const id = readOption(args, "--id");
+  if (!id || !/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,63}$/.test(id)) {
+    throw new Error("worker id 只能包含字母、数字、点、下划线和短横线，且长度不超过 64。");
+  }
+
+  const sessionName = `devflow-worker-${id}`;
+  if (!await context.tmux.hasSession({ sessionName })) {
+    throw new Error(`worker ${id} 未运行，无法在 VSCode 中打开。`);
+  }
+
+  const response = await context.bridge.requestAttach({ workerId: id });
+  context.stdout.write(`worker ${id} opened in VSCode${response.reused ? " (reused)" : ""}\n`);
+}
+
 async function send(args, context, submit) {
   const [id, ...messageParts] = args;
   const session = await context.store.readSession(id);
   const text = messageParts.join(" ");
   await context.tmux.sendText({ sessionName: session.tmuxSessionName, text, submit });
   await context.store.appendTranscript(id, `${submit ? "send" : "paste"} ${text}`);
+}
+
+async function runSlashCommand(args, context) {
+  const [id, ...commandParts] = args;
+  const slashCommand = commandParts.join(" ");
+  if (!slashCommand.startsWith("/")) {
+    throw new Error("command 只接受以 / 开头的 slash 命令。");
+  }
+  await send([id, slashCommand], context, true);
+}
+
+async function clearConversation(args, context) {
+  const [id] = args;
+  const session = await context.store.readSession(id);
+  await context.tmux.sendText({ sessionName: session.tmuxSessionName, text: "/clear", submit: true });
+  await context.store.appendTranscript(id, "clear");
+
+  const deadline = Date.now() + 10000;
+  while (Date.now() < deadline) {
+    const screen = await context.tmux.capturePane({ sessionName: session.tmuxSessionName });
+    if (screen.includes("Context 100% left")) {
+      context.stdout.write(`worker ${id} conversation cleared\n`);
+      return;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+
+  throw new Error(`worker ${id} 未能确认对话已清空。`);
 }
 
 async function capture(args, context) {

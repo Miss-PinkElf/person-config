@@ -11,6 +11,10 @@
     },
     {
       "type": "file",
+      "path": ".devflow/devflow-cli-worker/NEXT-SESSION-PROMPT-devflow-cli-worker.md"
+    },
+    {
+      "type": "file",
       "path": ".devflow/vscode-controlled-explorer/NEXT-SESSION-PROMPT-vscode-controlled-explorer.md"
     },
     {

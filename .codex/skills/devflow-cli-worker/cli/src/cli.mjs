@@ -85,11 +85,25 @@ async function start(args, context, visualMode) {
   context.stdout.write(`worker ${id} started\nresult: ${session.relativeResultPath}\n`);
 }
 
+async function requireSessionMetadata(id, sessionName, context) {
+  try {
+    await context.store.readSession(id);
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      throw new Error(
+        `worker ${id} 的 tmux 会话存在，但 CLI 会话元数据不存在。请先运行 tmux kill-session -t ${sessionName} 清理孤立会话后重试。`
+      );
+    }
+    throw error;
+  }
+}
+
 async function ensureInVscode(args, context) {
   const id = readOption(args, "--id") ?? "macos-worker";
   const sessionName = `devflow-worker-${id}`;
 
   if (await context.tmux.hasSession({ sessionName })) {
+    await requireSessionMetadata(id, sessionName, context);
     await context.tmux.setMouse({ sessionName });
     context.stdout.write(`worker ${id} reused\n`);
     return;
@@ -115,6 +129,7 @@ async function openInVscode(args, context) {
     throw new Error(`worker ${id} 未运行，无法在 VSCode 中打开。`);
   }
 
+  await requireSessionMetadata(id, sessionName, context);
   const response = await context.bridge.requestAttach({ workerId: id });
   context.stdout.write(`worker ${id} opened in VSCode${response.reused ? " (reused)" : ""}\n`);
 }

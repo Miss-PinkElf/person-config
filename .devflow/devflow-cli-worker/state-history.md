@@ -28,3 +28,8 @@
 ### 归档原因
 
 `devflow 0.4.0` 要求 `state.md` 保持短当前态，旧快照如仍有价值则归档到 `state-history.md`。
+# 2026-07-10 孤立会话保护收口前快照
+
+- 阶段：Close（收口）；孤立 tmux（tmux）会话保护已完成自动化与真实 VSCode 回归验证，等待提交。
+- 当前风险：菜单型 slash 命令自动化与 VSIX 分发元数据仍是既有非阻断事项。
+- 后续：准备交接文档并只提交本 mission 的 Skill、CLI 和 devflow 记录；不提交 session 附件或用户的 VSCode 配置。

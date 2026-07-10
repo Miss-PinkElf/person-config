@@ -10,5 +10,5 @@
 
 ## 不进入第一版
 
-- worker 管理 UI（User Interface）、状态列表、result.md 快速打开、轮询提醒。
+- worker 管理 UI（User Interface）、状态列表、result.md 快速打开、轮询提醒；如实现会话管理，必须展示孤立会话（Orphaned Session）并要求用户显式确认清理，不得自动结束会话。
 - Windows 原生终端控制（Windows Native Terminal Control）与 PowerShell（pwsh）适配。

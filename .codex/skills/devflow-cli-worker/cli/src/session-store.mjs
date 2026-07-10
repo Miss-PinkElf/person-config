@@ -51,7 +51,8 @@ export function createSessionStore({ repoRoot }) {
   async function readSession(workerId) {
     const session = resolveSession(workerId);
     const metadata = JSON.parse(await readFile(session.absoluteMetadataPath, "utf8"));
-    return { ...session, ...metadata };
+    assertSessionMetadataMatches(session, metadata);
+    return { ...session, ...pickMetadata(metadata) };
   }
 
   async function updateSession(workerId, patch) {
@@ -68,6 +69,20 @@ export function createSessionStore({ repoRoot }) {
   }
 
   return { resolveSession, createSession, readSession, updateSession, appendTranscript };
+}
+
+function assertSessionMetadataMatches(session, metadata) {
+  const expectedTmuxSessionName = `devflow-worker-${session.workerId}`;
+  if (
+    metadata?.workerId !== session.workerId ||
+    metadata?.tmuxSessionName !== expectedTmuxSessionName ||
+    metadata?.relativeSessionPath !== session.relativeSessionPath ||
+    metadata?.relativeResultPath !== session.relativeResultPath
+  ) {
+    throw new Error(
+      `worker ${session.workerId} 的 CLI 会话元数据与当前 tmux 会话不匹配。请先检查或清理 ${expectedTmuxSessionName} 后重试。`
+    );
+  }
 }
 
 function validateWorkerId(workerId) {

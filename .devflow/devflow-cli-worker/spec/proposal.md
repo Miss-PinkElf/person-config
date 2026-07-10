@@ -39,7 +39,7 @@
 - worker id 非法：拒绝创建，避免路径注入和 session 冲突。
 - VSCode 插件未就绪或 socket 不存在：`open-in-vscode` 返回中文错误，不使用键盘模拟作为回退。
 - VSCode 打开多个窗口：每个窗口可创建 attach 终端，但同名 tmux session 只启动一个 Codex CLI（Codex CLI）worker。
-- 同名 tmux session 存在但 session 附件缺失：允许 attach，不覆盖运行中 worker 的附件。
+- 同名 tmux session 存在但 CLI 会话元数据缺失或归属字段错配：拒绝复用或 attach，输出 worker id、tmux session 名称与手工清理指引；不得自动终止会话、重建元数据或伪造附件。
 - 当前环境是 Windows：只能跑 Node / TypeScript 逻辑测试，不能宣称 macOS 冒烟验证通过。
 
 ## 延期项

@@ -36,7 +36,7 @@ node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start-in-vscode
 node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs ensure-in-vscode --id macos-worker --command codex && tmux attach -t devflow-worker-macos-worker
 ```
 
-已有同名 tmux（tmux）会话时，`ensure-in-vscode` 直接复用并 attach，不会重启 Codex CLI（Codex CLI）。手动运行 `Start devflow CLI Worker` 用于创建其它 worker id。
+已有同名 tmux（tmux）会话且 `cli-session.json` 完整时，`ensure-in-vscode` 直接复用并 attach，不会重启 Codex CLI（Codex CLI）。手动运行 `Start devflow CLI Worker` 用于创建其它 worker id。
 
 普通提示词使用 `send`，它会自行提交。直接执行的 slash 命令使用 `command`；菜单型 slash 命令才使用 `paste` 后读取屏幕，再显式用 `key` 选择。`clear` 只由专用命令处理并验证 Context 100%。
 
@@ -50,6 +50,14 @@ node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs ensure-in-vscod
 ├── screen.txt
 └── prompt.md
 ```
+
+如果 tmux 会话存在但 `cli-session.json` 缺失，或其 worker id、tmux session 名称、相对 session 路径、result 路径与当前 worker 不匹配，CLI 会拒绝 `ensure-in-vscode` 和 `open-in-vscode`，防止把未知会话当作可控 worker。确认该会话已经无用后，手工清理：
+
+```bash
+tmux kill-session -t devflow-worker-<worker-id>
+```
+
+随后重新运行启动或 attach 命令。CLI 不会自动终止会话，也不会补造 session 附件。
 
 ## 当前限制
 

@@ -68,9 +68,17 @@
 - 经真实 Codex 多轮验证，文本发送采用字面量输入和受控 Enter；`clear` 以 Context 100% 为成功条件。
 - 菜单型 slash 命令自动化明确延期，避免自动确认造成误选。
 
+## 2026-07-10：孤立 tmux 会话保护
+
+- 真实回归发现，tmux（tmux）会话存活而 `cli-session.json` 已缺失时，`ensure-in-vscode` 会错误报告复用成功，后续读取元数据才失败。
+- 本轮清理了 5 个已确认的历史测试会话，保留两个正常 VSCode worker；对未知会话不采用自动终止或自动补造元数据。
+- Session Store（会话存储）现在验证 worker id、tmux session 名称、相对 session 路径与 result 路径，并仅合并允许字段；`ensure-in-vscode` 和 `open-in-vscode` 在所有副作用前执行校验。
+- 自动化测试覆盖缺失和错配两类元数据；真实负向验证确认 CLI 拒绝操作且不会自动结束会话，默认 `macos-worker` 随后完成新建、复用与 VSCode attach 回归。
+
 ## 推荐读取策略
 
 - 日常恢复：`state.md` + `checkpoints.md`
 - 当前交接：`handoffs/index.md` + 最新 handoff
 - 深度理解：本文件 + `decision-log.md`
 - 延期项：`deferred/`
+- 后续会话管理能力：`backlog.md`

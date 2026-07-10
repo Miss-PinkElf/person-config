@@ -2,13 +2,16 @@
 
 ## 当前目标
 
-收口 macOS 版 devflow CLI Worker（devflow CLI Worker）第一版：CLI（Command Line Interface）已归并到 Skill（Skill）主包，并在真实 macOS 上验证 iTerm2（iTerm2）与 Codex CLI（Codex CLI）worker 主链路。
+完成孤立 tmux（tmux）会话保护：已清理确认过的历史测试会话，并在 Session Store（会话存储）、`ensure-in-vscode` 与 `open-in-vscode` 中校验 CLI 会话元数据。
 
 ## 当前路径
 
 - 路径：重型路径（Heavy Path）
-- 当前阶段：Close（当前轮次收口，正在生成 handoff 并提交相关文件）
-- 触发原因：需求涉及技能（Skill）、命令行工具（CLI）、终端控制（Terminal Control）、会话记录（Session Records）、devflow 交接（Handoff）和延期项（Deferred Work）拆分，影响面较大且存在方案取舍。
+- 当前阶段：Close（已收口）；对齐记录为 `plans/2026-07-10-orphaned-tmux-session-align.md`，实施计划为 `plans/2026-07-10-orphaned-tmux-session-recovery-plan.md`，验证、交接与下一轮提示词已完成；准确提交标识以 `git log -1` 为准。
+
+## 已收口目标
+
+收口 macOS 版 devflow CLI Worker（devflow CLI Worker）第一版：CLI（Command Line Interface）已归并到 Skill（Skill）主包，并在真实 macOS 上验证 iTerm2（iTerm2）与 Codex CLI（Codex CLI）worker 主链路。
 
 ## 范围
 

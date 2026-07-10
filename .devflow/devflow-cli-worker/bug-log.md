@@ -85,3 +85,17 @@ CLI（Command Line Interface）的 `send` 当前基于 `tmux send-keys <text> En
 ### 解决方案
 
 文本改为字面量发送，Driver 在同一 CLI 操作内短暂等待后提交 Enter。新增 `clear`，在 tmux 屏幕出现 `Context 100% left` 前不报告成功；新增 `command` 处理直接执行的 slash 命令，菜单型命令保留人工显式选择。
+
+## 2026-07-10：历史 tmux 会话复用时缺失会话元数据
+
+### 问题现象
+
+执行 `ensure-in-vscode --id macos-worker --command codex` 返回 `worker macos-worker reused`，但紧接着运行 `get-info macos-worker` 报错：对应 `.devflow/devflow-cli-worker/sessions/macos-worker/cli-session.json` 不存在。此时无法发送任务、执行 `clear` 或读取结果。
+
+### 问题原因
+
+`ensure-in-vscode` 只通过 tmux（tmux）`has-session` 判断是否复用，未验证 CLI Session Store（CLI 会话存储）中的元数据。历史 tmux 会话保留，但其未跟踪的 session 附件目录已经不存在，形成孤立会话（Orphaned Session）。
+
+### 解决方案
+
+本轮已采用“拒绝并由用户确认后手工清理”的语义：结束 5 个已确认的历史测试会话，保留 `clear-task-test-20260710`；Session Store（会话存储）读取时验证 worker id、tmux session 名称、相对 session 路径与 result 路径，并忽略 JSON 中的额外覆盖字段。`ensure-in-vscode` 与 `open-in-vscode` 在设置鼠标或请求 VSCode attach 前读取元数据；缺失时给出精确的 `tmux kill-session` 命令，错配时拒绝操作并提示检查或清理。自动化测试、真实缺失元数据负向验证、默认 worker 的创建、复用和 VSCode attach 均已通过。

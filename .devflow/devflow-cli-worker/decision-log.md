@@ -51,3 +51,9 @@
 
 - 决策：tmux Driver（tmux Driver）使用 `send-keys -l` 输入文本，并在短暂等待后发送 Enter；`clear` 独立确认 Context 100%，`command` 区分直接执行的 slash 命令。
 - 原因：未使用字面量模式时 `/clear` 虽会进入输入框，却不能稳定提交；菜单型 slash 命令不应被自动额外确认。
+
+## 2026-07-10：孤立 tmux 会话采用拒绝复用而非自动修复
+
+- 背景：历史 tmux（tmux）会话可能存活而其 `cli-session.json` 已缺失或归属字段错配；自动杀掉会话会中断用户终端，自动补造元数据会伪造未知状态。
+- 决策：Session Store（会话存储）读取时验证元数据归属并忽略额外字段；`ensure-in-vscode` 与 `open-in-vscode` 在副作用前校验，缺失时提供精确的手工清理命令，错配时拒绝操作。
+- 原因：这既防止未知会话被控制，也避免 CLI 在缺乏用户确认时终止或伪造会话状态。

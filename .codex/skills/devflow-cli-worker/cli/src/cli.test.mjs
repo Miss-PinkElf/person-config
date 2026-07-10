@@ -1,5 +1,5 @@
 import { equal, ok, rejects } from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { runCli } from "./cli.mjs";
@@ -97,6 +97,69 @@ try {
 
   equal(bridgeCalls.at(-1), "reused");
   ok(output.join("").includes("worker reused opened in VSCode"));
+
+  const mouseCallCount = tmuxCalls.filter((call) => call === "setMouse").length;
+  await rejects(
+    runCli(["ensure-in-vscode", "--id", "orphaned", "--command", "codex"], {
+      cwd: root,
+      stdout: { write: (text) => output.push(text) },
+      stderr: { write: (text) => output.push(text) },
+      tmux: fakeTmux,
+      terminal: fakeTerminal
+    }),
+    /worker orphaned 的 tmux 会话存在，但 CLI 会话元数据不存在。请先运行 tmux kill-session -t devflow-worker-orphaned 清理孤立会话后重试。/
+  );
+  equal(tmuxCalls.filter((call) => call === "setMouse").length, mouseCallCount);
+
+  const bridgeCallCount = bridgeCalls.length;
+  await rejects(
+    runCli(["open-in-vscode", "--id", "orphaned"], {
+      cwd: root,
+      stdout: { write: (text) => output.push(text) },
+      stderr: { write: (text) => output.push(text) },
+      tmux: fakeTmux,
+      terminal: fakeTerminal,
+      bridge: fakeBridge
+    }),
+    /worker orphaned 的 tmux 会话存在，但 CLI 会话元数据不存在。请先运行 tmux kill-session -t devflow-worker-orphaned 清理孤立会话后重试。/
+  );
+  equal(bridgeCalls.length, bridgeCallCount);
+
+  const mismatchedSessionPath = join(root, ".devflow/devflow-cli-worker/sessions/mismatched");
+  await mkdir(mismatchedSessionPath, { recursive: true });
+  await writeFile(join(mismatchedSessionPath, "cli-session.json"), JSON.stringify({
+    workerId: "another-worker",
+    tmuxSessionName: "devflow-worker-another-worker",
+    relativeSessionPath: ".devflow/devflow-cli-worker/sessions/mismatched",
+    relativeResultPath: ".devflow/devflow-cli-worker/sessions/mismatched/result.md"
+  }), "utf8");
+
+  const mismatchedMouseCallCount = tmuxCalls.filter((call) => call === "setMouse").length;
+  await rejects(
+    runCli(["ensure-in-vscode", "--id", "mismatched", "--command", "codex"], {
+      cwd: root,
+      stdout: { write: (text) => output.push(text) },
+      stderr: { write: (text) => output.push(text) },
+      tmux: fakeTmux,
+      terminal: fakeTerminal
+    }),
+    /worker mismatched 的 CLI 会话元数据与当前 tmux 会话不匹配/
+  );
+  equal(tmuxCalls.filter((call) => call === "setMouse").length, mismatchedMouseCallCount);
+
+  const mismatchedBridgeCallCount = bridgeCalls.length;
+  await rejects(
+    runCli(["open-in-vscode", "--id", "mismatched"], {
+      cwd: root,
+      stdout: { write: (text) => output.push(text) },
+      stderr: { write: (text) => output.push(text) },
+      tmux: fakeTmux,
+      terminal: fakeTerminal,
+      bridge: fakeBridge
+    }),
+    /worker mismatched 的 CLI 会话元数据与当前 tmux 会话不匹配/
+  );
+  equal(bridgeCalls.length, mismatchedBridgeCallCount);
 
   existingTmuxSession = false;
   await rejects(

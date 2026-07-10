@@ -12,6 +12,11 @@
 - [x] Task 8：新增 README 并执行验证（README and Verification）
 - [x] Task 9：VSCode 自动启动与会话复用（VSCode Auto Start and Session Reuse）
 - [x] Task 10：VSCode Worker Attach 桥接（VSCode Worker Attach Bridge）
+- [x] Task 11：孤立 tmux 会话保护（Orphaned tmux Session Guard）
+  - 清理本轮已确认的 5 个历史测试孤立会话，保留当前 `clear-task-test-20260710`。
+  - `ensure-in-vscode` 与 `open-in-vscode` 在同名 tmux 会话存在时校验 CLI 会话元数据；缺失或归属字段错配时拒绝复用或 attach，并给出不自动清理的中文指引。
+  - 单元测试覆盖两个入口的孤立会话失败路径和既有正常复用路径。
+  - 更新 Worker CLI（Worker CLI）README 与 Skill（Skill）使用规程。
 
 ## 验收标准
 
@@ -25,6 +30,7 @@
 - VSCode 打开当前工作区后，无需命令面板操作即创建 `devflow worker: macos-worker` 终端；已有 `devflow-worker-macos-worker` tmux（tmux）会话时只 attach、不启动第二个 Codex CLI（Codex CLI）worker。
 - `ensure-in-vscode` 的首次创建与会话复用均由 CLI 单元测试覆盖；插件自动启动命令构造由 TypeScript（TypeScript）测试覆盖。
 - `open-in-vscode` 只对存在的 tmux session 请求 VSCode 插件；插件通过 Unix Socket（Unix 域套接字）创建或聚焦对应 attach 终端，重复请求不创建第二个终端。
+- 同名 tmux 会话存在但 cli-session.json 缺失或归属字段错配时，`ensure-in-vscode` 与 `open-in-vscode` 必须拒绝操作，不设置鼠标、不请求 VSCode attach；错误包含手工清理命令。
 
 ## 验证证据
 

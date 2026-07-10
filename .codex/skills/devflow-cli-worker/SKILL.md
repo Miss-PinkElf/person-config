@@ -12,7 +12,7 @@ description: |
 
 本技能默认只覆盖 macOS。Windows 原生、PowerShell（pwsh）、WSL（Windows Subsystem for Linux）和 Windows / WSL VSCode 入口不在本轮范围内。
 
-macOS VSCode 插件（VSCode Extension）安装后，打开工作区会自动创建 `devflow worker: macos-worker` 内置终端（VSCode Integrated Terminal）。该终端使用 `ensure-in-vscode`：已有 `devflow-worker-macos-worker` tmux 会话时直接 attach，不会启动第二个 Codex CLI（Codex CLI）worker。命令面板的 `Start devflow CLI Worker` 保留给额外 worker id。
+macOS VSCode 插件（VSCode Extension）安装后，打开工作区会自动创建 `devflow worker: macos-worker` 内置终端（VSCode Integrated Terminal）。该终端使用 `ensure-in-vscode`：已有 `devflow-worker-macos-worker` tmux 会话且 CLI 会话元数据完整时直接 attach，不会启动第二个 Codex CLI（Codex CLI）worker。命令面板的 `Start devflow CLI Worker` 保留给额外 worker id。
 
 ## 核心原则
 
@@ -38,6 +38,14 @@ node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs start-and-open-
 ```bash
 node .codex/skills/devflow-cli-worker/cli/bin/devflow-worker.mjs ensure-in-vscode --id macos-worker --command codex
 ```
+
+如果同名 tmux（tmux）会话存在，但对应的 `cli-session.json` 缺失或其归属字段与 worker 不匹配，CLI 会拒绝复用，且不会自动终止会话或补造元数据。确认该会话不再使用后，可执行：
+
+```bash
+tmux kill-session -t devflow-worker-<worker-id>
+```
+
+再重试 `ensure-in-vscode` 或 `open-in-vscode`。
 
 需要在 VSCode 中显示已运行的指定 worker 时，运行：
 

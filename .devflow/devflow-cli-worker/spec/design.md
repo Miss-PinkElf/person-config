@@ -61,6 +61,13 @@
 - `get-info` 输出结构化 JSON。
 - `wait-agent` 输出结构化 JSON。
 
+### 孤立会话保护
+
+- 当 `ensure-in-vscode` 或 `open-in-vscode` 发现同名 tmux（tmux）会话时，必须先读取对应 worker 的 `cli-session.json`。
+- 读取成功才允许设置 `mouse on`、输出复用状态或请求 VSCode Attach Bridge（VSCode 附加桥接）。
+- 元数据文件缺失时，CLI 返回包含 worker id、tmux session 名称和 `tmux kill-session -t <session>` 的中文错误；不自动结束 tmux 会话，不补造 `result.md`（Result File）、prompt 或 transcript。
+- Session Store（会话存储）读取元数据时必须校验 worker id、tmux session 名称、相对 session 路径与 result 路径；只合并允许字段，避免 JSON 以额外字段覆盖推导出的安全路径。字段错配与 JSON 格式损坏继续报错，避免把真实存储故障误报为可安全清理的孤立会话。
+
 ## Skill 模块
 
 Skill（Skill）不实现控制逻辑，只规定主 Agent 使用 CLI 的流程：
@@ -86,14 +93,14 @@ Skill（Skill）不实现控制逻辑，只规定主 Agent 使用 CLI 的流程�
 ## 数据流
 
 1. 主 Agent 或 VSCode 插件调用 CLI。
-2. `ensure-in-vscode` 检查 tmux session；不存在时才创建 session 文件与 tmux session，存在时直接复用。
+2. `ensure-in-vscode` 检查 tmux session；不存在时创建 session 文件与 tmux session，存在时先校验 CLI 会话元数据，校验通过才复用。
 3. CLI 创建 tmux session 或返回复用状态。
 4. CLI 发送 prompt。
 5. 用户在可见终端中观察或介入。
 6. 主 Agent 使用 `get-info` / `wait-agent` 轮询。
 7. worker 把结果写入 `result.md`。
 8. 主 Agent 读取 result.md 并整合回当前 devflow mission。
-9. 主 Agent 需要在 VSCode 显示指定 worker 时，调用 `open-in-vscode`；CLI 请求插件 attach，但不转移 tmux 控制权。
+9. 主 Agent 需要在 VSCode 显示指定 worker 时，调用 `open-in-vscode`；CLI 校验会话元数据后请求插件 attach，但不转移 tmux 控制权。
 
 ## 验证策略
 

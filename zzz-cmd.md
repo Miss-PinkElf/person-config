@@ -89,3 +89,5 @@ handoff，使用devflow这个skills的子skill；
     ```
 
 15. lsof -ti:3721 | xargs kill && npm run start
+16. Remove-Item Env:HTTP_PROXY,Env:HTTPS_PROXY,Env:ALL_PROXY,Env:http_proxy,Env:https_proxy,Env:all_proxy -ErrorAction SilentlyContinue; $env:NO_PROXY='*'; $env:no_proxy='*'
+    1.  移除代理

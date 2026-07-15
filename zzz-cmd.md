@@ -90,3 +90,5 @@ handoff，使用devflow这个skills的子skill；
 
 15. lsof -ti:3721 | xargs kill && npm run start
 16. export http_proxy=http://127.0.0.1:7897 https_proxy=http://127.0.0.1:7897 all_proxy=socks5://127.0.0.1:7897 HTTP_PROXY=$http_proxy HTTPS_PROXY=$https_proxy ALL_PROXY=$all_prox
+16. Remove-Item Env:HTTP_PROXY,Env:HTTPS_PROXY,Env:ALL_PROXY,Env:http_proxy,Env:https_proxy,Env:all_proxy -ErrorAction SilentlyContinue; $env:NO_PROXY='*'; $env:no_proxy='*'
+    1.  移除代理

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex 模型目录维护"
+  short_description: "从官方模型目录刷新并安全维护项目自定义模型元数据配置与验证流程"
+  default_prompt: "使用 $codex-model-catalog 刷新官方模型目录并添加自定义模型。"

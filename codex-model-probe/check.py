@@ -145,6 +145,38 @@ def judge(turn, state, strict=False):
     return findings
 
 
+def server_model(turn):
+    """服务端在 SSE 里标注的模型。没有则返回 None。"""
+    if not turn:
+        return None
+    for key in ("response.completed", "response.created"):
+        model = (turn.get(key) or {}).get("model")
+        if model:
+            return model
+    return None
+
+
+def actual_model_line(turn):
+    """底部状态栏风格的一行：实际 model:xxxx。"""
+    if not turn:
+        return "实际 model: 未采集到"
+    served = server_model(turn)
+    requested = turn.get("req_model")
+    if served and requested and served != requested:
+        return "实际 model: {} · 请求 {}".format(served, requested)
+    if served:
+        return "实际 model: {}".format(served)
+    if requested:
+        return "实际 model: {} · 仅请求侧".format(requested)
+    return "实际 model: 未采集到"
+
+
+def actual_model_message(turn, findings):
+    parts = [actual_model_line(turn)]
+    parts.extend(message for _, _, message in findings)
+    return " · ".join(parts)
+
+
 def do_report():
     turns = read_turns()
     turn = latest_turn(turns)
@@ -160,7 +192,8 @@ def do_report():
                                             time.localtime(turn.get("ts", 0))))
     print("  HTTP 状态     :", turn.get("status"))
     print("  请求模型      :", turn.get("req_model"))
-    print("  服务端标注模型:", (turn.get("response.created") or {}).get("model"))
+    print("  服务端标注模型:", server_model(turn))
+    print(" ", actual_model_line(turn))
     print("  首字节/总时长 : {} ms / {} ms".format(
         turn.get("first_chunk_ms"), turn.get("total_stream_ms")))
     print("  --- 服务端信号 ---")
@@ -219,10 +252,10 @@ def main():
             notify(title, message)
         print("[{}] {}: {}".format(level, title, message), file=sys.stderr)
 
-    # 让 Codex 把提示带进上下文（部分事件支持，不支持时静默忽略）
-    if findings:
-        summary = "；".join(m for _, _, m in findings)
-        print(json.dumps({"systemMessage": "[codex-probe] " + summary}))
+    # Stop 的 stdout 必须是 JSON。systemMessage 会显示在 TUI 里。
+    # 0.157 的 status_line 只有内置项，不能把这行插进底部状态栏。
+    print(json.dumps({"systemMessage": actual_model_message(turn, findings)},
+                     ensure_ascii=False))
 
     return 0
 

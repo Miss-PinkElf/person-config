@@ -5,11 +5,11 @@ Codex 降级探测代理（流式版）
 - 逐块实时转发，不破坏流式体验
 - 记录服务端真实信号：x-codex-* 响应头 + SSE 事件里的 model
 - 绝不记录 Authorization / token 等凭据
-- 继承 ~/.codex/.env 里的 HTTPS_PROXY（Codex 走代理连 chatgpt.com，本代理必须同样）
+- 启动时读取 ~/.codex/.env 里的 HTTPS_PROXY（Codex 走代理连 chatgpt.com，本代理必须同样）
+- 进程里已经存在的环境变量不会被这个文件覆盖
 
 启动：
-    set -a; . ~/.codex/.env; set +a
-    python3 codex_probe_proxy.py
+    python3 probe_proxy.py
 
 Codex 侧配置：
     [model_providers.probe]
@@ -31,7 +31,9 @@ import urllib.request
 
 UPSTREAM = "https://chatgpt.com"
 OUT = os.path.expanduser("~/.codex-probe/turns.jsonl")
+CODEX_ENV = os.path.expanduser("~/.codex/.env")
 PORT = int(os.environ.get("PROBE_PORT", "8787"))
+PROXY_ENV_KEYS = ("HTTPS_PROXY", "https_proxy", "ALL_PROXY", "all_proxy")
 
 # 只保留这些前缀的响应头（服务端真实信号）
 HEADER_ALLOW = ("x-codex", "x-models", "x-openai")
@@ -46,6 +48,54 @@ INTERESTING = (
 CHUNK = 2048
 # 上游读超时（秒）。SSE 有空闲 keepalive，通常远小于此值
 UPSTREAM_TIMEOUT = 300
+
+
+def parse_env_line(line):
+    """解析一行 KEY=VALUE。注释、空行和非法键返回 None。"""
+    text = line.strip()
+    if not text or text.startswith("#"):
+        return None
+    if text.startswith("export "):
+        text = text[len("export "):].strip()
+    if "=" not in text:
+        return None
+    key, value = text.split("=", 1)
+    key = key.strip()
+    if not key or any(not (ch.isalnum() or ch == "_") for ch in key):
+        return None
+    value = value.strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+        value = value[1:-1]
+    return key, value
+
+
+def load_codex_env(path=CODEX_ENV):
+    """把 ~/.codex/.env 读进当前进程。已有环境变量保持不动。返回新写入的键数量。"""
+    try:
+        lines = open(path, encoding="utf-8")
+    except FileNotFoundError:
+        print(f"[warn] 未找到 {path}，无法读取代理变量。", file=sys.stderr)
+        return 0
+    except OSError as exc:
+        print(f"[warn] 读取 {path} 失败：{exc}", file=sys.stderr)
+        return 0
+
+    applied = 0
+    with lines:
+        for line in lines:
+            item = parse_env_line(line)
+            if item is None:
+                continue
+            key, value = item
+            if key in os.environ:
+                continue
+            os.environ[key] = value
+            applied += 1
+    return applied
+
+
+def proxy_env_ready():
+    return any(os.environ.get(key) for key in PROXY_ENV_KEYS)
 
 
 def write_record(rec):
@@ -227,10 +277,12 @@ class ThreadingServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
 
 
 def main():
-    if not (os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
-            or os.environ.get("ALL_PROXY") or os.environ.get("all_proxy")):
+    applied = load_codex_env()
+    if not proxy_env_ready():
         print("[warn] 未检测到 HTTPS_PROXY —— 上游 chatgpt.com 大概率连不上。", file=sys.stderr)
-        print("       请用：set -a; . ~/.codex/.env; set +a 后再启动。", file=sys.stderr)
+        print(f"       已尝试读取 {CODEX_ENV}。", file=sys.stderr)
+    elif applied:
+        print(f"[probe] 已从 {CODEX_ENV} 读取代理变量", flush=True)
 
     print(f"[probe] listening on 127.0.0.1:{PORT}", flush=True)
     print(f"[probe] 记录写入 {OUT}", flush=True)

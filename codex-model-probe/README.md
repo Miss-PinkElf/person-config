@@ -2,7 +2,7 @@
 
 判断 Codex CLI 有没有被「静默降级 / 降智」，并在额度吃紧时提前预警。
 
-**当前状态：未启用。** 文件只是放在这里，不安装、不启动就完全没有任何作用。
+**当前状态：用户级路由已指向本机代理，项目级 Stop 钩子已写在仓库根目录 `.codex/hooks.json`。** 代理进程没启动时，Codex 的模型请求会失败。钩子还要在 Codex 里执行 `/hooks` 信任一次，否则会被静默跳过。
 
 ---
 
@@ -112,23 +112,22 @@ HTTP 400
 |---|---|
 | `probe_proxy.py` | 流式反向代理。转发 + 采集信号，写 `~/.codex-probe/turns.jsonl` |
 | `check.py` | 判定脚本。被 hooks 调用，也可手动 `--report` 查看状态 |
-| `hooks.json` | Codex Stop 钩子配置，安装时复制到 `~/.codex/hooks.json` |
-| `install.sh` | 安装脚本。**默认演练模式**，加 `--apply` 才真正写入 |
+| `hooks.json` | 钩子示例。当前生效的是仓库根目录 `.codex/hooks.json` |
+| `../.codex/hooks.json` | 当前生效的项目级 Stop 钩子，调用本仓库的 `check.py` |
+| `install-for-agent.md` | 给代理的安装说明。改配置、挂钩子、检查出站代理、后台常驻 |
+| `stop.sh` | 停止本机探测代理。只结束监听 `127.0.0.1:8787` 的 `probe_proxy.py` |
+| `clean.sh` | 停止代理，删除 config.toml 里的 probe 路由，并删除项目级和全局探测钩子 |
 | `调研报告.md` | 本次调研的完整过程与结论 |
 
 ---
 
 ## 安装
 
-```bash
-cd ~/Documents/111AAA-code/person-config/codex-model-probe
-./install.sh            # 先演练，看看会改什么
-./install.sh --apply    # 确认无误再执行
-```
+给代理安装时，按 `install-for-agent.md` 执行。
 
-然后手动完成 3 步：
+人工对照时，仍然是下面 3 步：
 
-**1. 配置 provider**（`~/.codex/config.toml`）
+**1. 配置 provider**（只能写用户级 `~/.codex/config.toml`）
 
 ```toml
 model_provider = "probe"
@@ -141,21 +140,37 @@ supports_websockets  = false      # 走 HTTP SSE，代理才好写
 requires_openai_auth = true       # 继续用你的 OAuth，不需要 API key
 ```
 
+项目级 `.codex/config.toml` 里的 `model_provider` 和 `model_providers` 会被 Codex 忽略，启动时还会警告。探测路由因此写在用户级 `~/.codex/config.toml`。这份配置已经指向 `probe`，代理进程必须保持运行，否则模型请求会失败。
+
 **2. 启动代理**（必须常驻，另开终端）
 
 ```bash
-set -a; . ~/.codex/.env; set +a
-python3 ~/.codex-probe/probe_proxy.py
+python3 ~/Documents/111AAA-code/person-config/codex-model-probe/probe_proxy.py
 ```
 
-**3. 信任钩子** —— 在 Codex 里执行 `/hooks`。
+脚本启动时会自己读取 `~/.codex/.env`。当前进程里已经有的同名变量不会被覆盖。
 
-> 这一步不做，钩子会被**静默跳过**，你永远收不到告警，而且不会有任何报错提示。
+**3. 信任钩子** —— 项目级钩子已经写在仓库根目录 `.codex/hooks.json`。在这个项目里打开 Codex，执行 `/hooks` 并信任它。
+
+> 这一步不做，钩子会被**静默跳过**，你永远收不到告警，而且不会有任何报错提示。这个项目在用户配置里已经是 trusted，所以项目级 `.codex/` 会被加载。
+
+钩子每轮结束会往 TUI 送一行 `实际 model: ...`，样式接近底部状态栏（status line）的 ` · ` 分隔。Codex 0.157 的 `status_line` 只能选内置项，这行显示为钩子的 `systemMessage`，不会嵌进底部那一栏。没有采集到记录时显示 `实际 model: 未采集到`。
+
+### 停止代理
+
+在项目目录执行，不依赖 `~/.codex-probe` 是否已安装：
+
+```bash
+cd ~/Documents/111AAA-code/person-config/codex-model-probe
+./stop.sh
+```
+
+端口可用 `PROBE_PORT` 覆盖，需与启动时一致。脚本只向命令行包含 `probe_proxy.py` 的监听进程发 `SIGTERM`；约 3 秒仍不退出才发 `SIGKILL`。端口上若是别的程序，脚本拒绝结束并以非 0 退出。
 
 ### 验证
 
 ```bash
-python3 ~/.codex-probe/check.py --report
+python3 ~/Documents/111AAA-code/person-config/codex-model-probe/check.py --report
 ```
 
 ---
@@ -178,15 +193,9 @@ python3 ~/.codex-probe/check.py --report
 
 ## 踩坑记录
 
-**代理连不上 chatgpt.com。** Codex 会读取 `~/.codex/.env`，里面配置了 `HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY`。Codex 自己走这个代理所以能连通，而新起的 Python 进程如果不继承这套环境变量，直连会超时（`Errno 60`）。
+**代理连不上 chatgpt.com。** Codex 会读取 `~/.codex/.env`，里面配置了 `HTTPS_PROXY` / `HTTP_PROXY` / `NO_PROXY`。早期直接启动 Python 时，进程不会继承这个文件，直连会超时（`Errno 60`）。现象是 Codex 正常，代理转发全部超时。
 
-现象极具迷惑性：**Codex 一切正常，但代理转发全部超时**。启动代理前必须：
-
-```bash
-set -a; . ~/.codex/.env; set +a
-```
-
-代理启动时会检测这个，没检测到会打印警告。
+`probe_proxy.py` 现在会在启动时读取这个文件。读到代理变量会打印「已从 ~/.codex/.env 读取代理变量」；文件缺失或里面没有代理变量时仍打印警告。
 
 **另外**：`codex exec` 的 stdout **不会**输出网上流传的那行 `model: xxx`，在 0.157.1 上实测为空。不要照抄那些一行命令。
 
@@ -195,10 +204,13 @@ set -a; . ~/.codex/.env; set +a
 ## 回滚
 
 ```bash
-rm ~/.codex/hooks.json
-rm -rf ~/.codex-probe
+codex-model-probe/clean.sh
 ```
 
-再从 `~/.codex/config.toml` 删掉 `model_provider = "probe"` 和 `[model_providers.probe]` 段。
+这会停止探测进程，从 `~/.codex/config.toml` 去掉 `probe` 路由和钩子信任记录，并删除项目级 `.codex/hooks.json` 和全局 `~/.codex/hooks.json` 里的探测钩子。改完要重启 Codex。
 
-至此完全恢复原状，不留任何痕迹。
+`clean.sh` 不删除 `~/.codex/.env`，也不删除 `~/.codex-probe` 里的记录。记录目录要自己删：
+
+```bash
+rm -rf ~/.codex-probe
+```

@@ -1,0 +1,36 @@
+{
+  "name": "vscode-quick-open-target",
+  "displayName": "快捷打开指定文件",
+  "description": "通过快捷键打开指定文件，并把光标放到文件末尾或最后一个非空字符之后。",
+  "version": "0.1.0",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:quickOpenTarget.openFile"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "quickOpenTarget.openFile",
+        "title": "快捷打开指定文件"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "test": "npm run compile && node out/cursorPosition.test.js && node out/openTarget.test.js",
+    "package": "npm run compile && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.90.0",
+    "@vscode/vsce": "^3.1.0",
+    "typescript": "^5.5.0"
+  }
+}

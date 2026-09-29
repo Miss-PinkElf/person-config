@@ -1,0 +1,34 @@
+import * as vscode from 'vscode';
+import { pruneWorktree } from '@/core/git/pruneWorktree';
+import { clearMainFolderCache } from '@/core/git/getMainFolder';
+import { Alert } from '@/core/ui/message';
+import logger from '@/core/log/logger';
+import { pickGitFolder } from '@/core/ui/pickGitFolder';
+
+export const pruneWorktreeCmd = async () => {
+    try {
+        const repoPath = (await pickGitFolder(vscode.l10n.t('Select Git repository to prune worktree from'))) || '';
+        const output = await pruneWorktree(true, repoPath);
+        if (!output?.length) {
+            return;
+        }
+        const ok = vscode.l10n.t('Prune');
+        const confirm = await vscode.window.showInformationMessage(
+            vscode.l10n.t('The following worktree folders will be pruned'),
+            {
+                detail: output.join('  \n'),
+                modal: true,
+            },
+            ok,
+        );
+        if (confirm !== ok) {
+            return;
+        }
+        await pruneWorktree(false, repoPath);
+        clearMainFolderCache(repoPath);
+        Alert.showInformationMessage(vscode.l10n.t('Worktree pruning completed successfully'));
+    } catch (error) {
+        Alert.showErrorMessage(vscode.l10n.t('Failed to prune worktree'));
+        logger.error(error);
+    }
+};

@@ -1,0 +1,56 @@
+import * as vscode from 'vscode';
+// 加载dayjs中文语言包
+import 'dayjs/locale/zh-cn';
+import 'dayjs/locale/ja';
+import 'dayjs/locale/zh-tw';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import dayjs from 'dayjs';
+
+dayjs.extend(relativeTime);
+dayjs.locale(vscode.env.language); // 全局使用
+
+export function formatQuery<T extends string>(keyList: T[]) {
+    return [...new Set(keyList)].map((key) => `${key}="%(${key})"`).join(' ');
+}
+
+export function formatSimpleQuery<T extends string>(keyList: T[]) {
+    return [...new Set(keyList)].map((key) => `${key}="%${key}"`).join(' ');
+}
+
+// 转义正则表达式特殊字符
+const escapedReg = /[.*+?^${}()|[\]\\]/g;
+export function parseOutput<T extends string>(output: string, keyList: T[]): Record<T, string>[] {
+    const tokenList = [...new Set(keyList)];
+    const regex = tokenList.map((key) => `${key.replace(escapedReg, '\\$&')}="(.*)"`).join(' ');
+    const workTrees = [];
+    const matches = output.matchAll(new RegExp(regex, 'g'));
+    for (const match of matches) {
+        const item = tokenList.reduce<Record<string, string>>((obj, key, index) => {
+            obj[key] = match[index + 1];
+            return obj;
+        }, {});
+        workTrees.push(item);
+    }
+    return workTrees;
+}
+
+export function formatTime(time: string) {
+    return dayjs(time).fromNow();
+}
+
+export function parseTimestamp(time: string) {
+    const parsed = dayjs(time);
+    return parsed.isValid() ? parsed.valueOf() : 0;
+}
+
+export function formatTimeDetail(time: string) {
+    return dayjs(time).format('YYYY-MM-DD HH:mm:ss');
+}
+
+export function parseObjStr(str: string) {
+    try {
+        return JSON.parse(str);
+    } catch {
+        return {};
+    }
+}

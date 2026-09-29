@@ -1,0 +1,324 @@
+## v3.30.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.29.0...v3.30.0)
+
+### 🚀 Enhancements
+
+- Add persistent worktree groups ([#69](https://github.com/jackiotyu/git-worktree-manager/pull/69))
+
+## v3.29.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.28.0...v3.29.0)
+
+### 🚀 Enhancements
+
+- Add context menu option to open repository in Explorer and related configurations ([4526591](https://github.com/jackiotyu/git-worktree-manager/commit/4526591))
+
+### 🔥 Performance
+
+- Optimize startup performance, batch git operations and enhance caching ([#68](https://github.com/jackiotyu/git-worktree-manager/pull/68))
+
+### 🏡 Chore
+
+- Update dependencies ([ba78db4](https://github.com/jackiotyu/git-worktree-manager/commit/ba78db4))
+
+## v3.28.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.27.0...v3.28.0)
+
+### 🚀 Enhancements
+
+- Add treeView.worktreeLabelTemplate to customize worktree item labels ([#65](https://github.com/jackiotyu/git-worktree-manager/pull/65))
+
+### 🏡 Chore
+
+- Update dependencies ([dfab2a0](https://github.com/jackiotyu/git-worktree-manager/commit/dfab2a0))
+
+## v3.27.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.26.2...v3.27.0)
+
+### 🚀 Enhancements
+
+- Add commands to remove merged and selected worktrees with UI support ([#64](https://github.com/jackiotyu/git-worktree-manager/pull/64))
+
+### 🩹 Fixes
+
+- Swap detail and description in createQuickPickItem for clarity ([3a39346](https://github.com/jackiotyu/git-worktree-manager/commit/3a39346))
+
+## v3.26.2
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.26.1...v3.26.2)
+
+### 💅 Refactors
+
+- Update switchWorktreeCmd to reuse window and prevent new window opening ([#61](https://github.com/jackiotyu/git-worktree-manager/pull/61))
+
+## v3.26.1
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.26.0...v3.26.1)
+
+### 💅 Refactors
+
+- Rename "searchAllWorktree" to "findWorktree" and update related commands ([8998345](https://github.com/jackiotyu/git-worktree-manager/commit/8998345))
+
+## v3.26.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.25.0...v3.26.0)
+
+### 🩹 Fixes
+
+- Make "Find Worktree" respect default display list ([#51](https://github.com/jackiotyu/git-worktree-manager/pull/51))
+
+## v3.25.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.24.2...v3.25.0)
+
+### 🚀 Enhancements
+
+- **quickPick:** Add sorting options by time in branch picker ([2392065](https://github.com/jackiotyu/git-worktree-manager/commit/2392065))
+
+## v3.24.2
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.24.1...v3.24.2)
+
+### 🚀 Enhancements
+
+- **treeView:** Show last commit time on worktree items ([#51](https://github.com/jackiotyu/git-worktree-manager/pull/51))
+
+### 🩹 Fixes
+
+- **path:** Enhance path normalization for cross-platform compatibility ([952d2a0](https://github.com/jackiotyu/git-worktree-manager/commit/952d2a0))
+
+### 📖 Documentation
+
+- Update AGENTS.md with enhanced development guidelines and project structure ([b5c0097](https://github.com/jackiotyu/git-worktree-manager/commit/b5c0097))
+
+### 🏡 Chore
+
+- Add pnpm workspace configuration to allow builds for specific packages ([0989519](https://github.com/jackiotyu/git-worktree-manager/commit/0989519))
+
+## v3.24.1
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.24.0...v3.24.1)
+
+### 🩹 Fixes
+
+- **getWorktreeList:** Improve path normalization for worktree and main folder comparisons ([6026e9c](https://github.com/jackiotyu/git-worktree-manager/commit/6026e9c))
+
+### 🏡 Chore
+
+- **tests:** Add unit tests for path utilities using Vitest ([6fba2cd](https://github.com/jackiotyu/git-worktree-manager/commit/6fba2cd))
+
+## v3.24.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.6...v3.24.0)
+
+### 🚀 Enhancements
+
+- **hooks:** Add preRemoveCmd lifecycle hook ([#50](https://github.com/jackiotyu/git-worktree-manager/pull/50))
+
+### 💅 Refactors
+
+- Move worktree hooks to core/hooks and add post-create hook ([6c7bd61](https://github.com/jackiotyu/git-worktree-manager/commit/6c7bd61))
+
+### 🤖 CI
+
+- Update GitHub Actions workflow to install dependencies ([f758080](https://github.com/jackiotyu/git-worktree-manager/commit/f758080))
+
+## v3.23.6
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.5...v3.23.6)
+
+### 🩹 Fixes
+
+- **path:** Path handling ([542a37c](https://github.com/jackiotyu/git-worktree-manager/commit/542a37c))
+
+## v3.23.5
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.4...v3.23.5)
+
+### 🚀 Enhancements
+
+- **git:** Refactored path normalization logic ([770a0b5](https://github.com/jackiotyu/git-worktree-manager/commit/770a0b5))
+
+### 📖 Documentation
+
+- Update License ([695cb1b](https://github.com/jackiotyu/git-worktree-manager/commit/695cb1b))
+
+## v3.23.4
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.3...v3.23.4)
+
+### 🚀 Enhancements
+
+- **version:** Add version utility functions and enhance worktree item mapping ([33392ca](https://github.com/jackiotyu/git-worktree-manager/commit/33392ca))
+
+### 🩹 Fixes
+
+- **git:** Enhance main folder path resolution ([06ae549](https://github.com/jackiotyu/git-worktree-manager/commit/06ae549))
+
+## v3.23.3
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.2...v3.23.3)
+
+### 🩹 Fixes
+
+- **git:** Simplify main folder retrieval logic ([b8a0627](https://github.com/jackiotyu/git-worktree-manager/commit/b8a0627))
+
+## v3.23.2
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.1...v3.23.2)
+
+### 🩹 Fixes
+
+- **path:** Preserve path casing on case-sensitive filesystems ([#48](https://github.com/jackiotyu/git-worktree-manager/pull/48))
+
+### 💅 Refactors
+
+- **folder:** Extract path utility functions and simplify folder URI handling ([e21007a](https://github.com/jackiotyu/git-worktree-manager/commit/e21007a))
+
+## v3.23.1
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.23.0...v3.23.1)
+
+### 🩹 Fixes
+
+- **util:** Correct method name for case conversion in toSimplePath function ([1e774bf](https://github.com/jackiotyu/git-worktree-manager/commit/1e774bf))
+- **folderRoot:** Ensure folder URIs are consistently lowercased for cross-platform compatibility ([70772da](https://github.com/jackiotyu/git-worktree-manager/commit/70772da))
+
+## v3.23.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.22.3...v3.23.0)
+
+### 🩹 Fixes
+
+- **linux:** Fix the issue where the plugin does not work properly under Linux ([#47](https://github.com/jackiotyu/git-worktree-manager/pull/47))
+
+### 🏡 Chore
+
+- **release:** Update pnpm action version in release workflow ([28e6235](https://github.com/jackiotyu/git-worktree-manager/commit/28e6235))
+
+## v3.22.3
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.22.2...v3.22.3)
+
+### 🩹 Fixes
+
+- **command:** Pass DefaultDisplayList to pickWorktree in searchAllWorktreeCmd ([2c382d7](https://github.com/jackiotyu/git-worktree-manager/commit/2c382d7))
+
+## v3.22.2
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.22.1...v3.22.2)
+
+### 🎨 Styles
+
+- **command:** Update icon paths and improve file decoration colors ([ec7dfb2](https://github.com/jackiotyu/git-worktree-manager/commit/ec7dfb2))
+
+## v3.22.1
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.22.0...v3.22.1)
+
+### 🚀 Enhancements
+
+- **quickPick:** Display file icon by adding resourceUri to workspace pick items ([632940b](https://github.com/jackiotyu/git-worktree-manager/commit/632940b))
+
+### 🩹 Fixes
+
+- **i18n:** Update glob pattern descriptions ([3f010ec](https://github.com/jackiotyu/git-worktree-manager/commit/3f010ec))
+
+### 🏡 Chore
+
+- **release:** Update pnpm action to v4.2.0 in release workflow ([7d8386f](https://github.com/jackiotyu/git-worktree-manager/commit/7d8386f))
+- **eslint:** Migrate to eslint 9 ([9f5c12a](https://github.com/jackiotyu/git-worktree-manager/commit/9f5c12a))
+
+## v3.22.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.21.1...v3.22.0)
+
+### 🚀 Enhancements
+
+- Respect vscode git.checkoutType setting ([#43](https://github.com/jackiotyu/git-worktree-manager/pull/43))
+- **branch:** Sanitize branch name ([#44](https://github.com/jackiotyu/git-worktree-manager/pull/44))
+
+### 📖 Documentation
+
+- Add Open VSX Downloads badge to README files ([620dd9f](https://github.com/jackiotyu/git-worktree-manager/commit/620dd9f))
+- **README:** Update documentation with improved descriptions and configuration details ([2d6ead4](https://github.com/jackiotyu/git-worktree-manager/commit/2d6ead4))
+
+## v3.21.1
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.21.0...v3.21.1)
+
+### 🩹 Fixes
+
+- **worktree:** Handle undefined main folder path in getRootItems ([5bf36f1](https://github.com/jackiotyu/git-worktree-manager/commit/5bf36f1))
+
+### 📖 Documentation
+
+- Git version requirement ([93a84b1](https://github.com/jackiotyu/git-worktree-manager/commit/93a84b1))
+
+## v3.21.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.20.0...v3.21.0)
+
+### 🩹 Fixes
+
+- **worktree:** Improve symlink copy handling ([9d26c2b](https://github.com/jackiotyu/git-worktree-manager/commit/9d26c2b))
+
+## v3.20.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.19.0...v3.20.0)
+
+### 🚀 Enhancements
+
+- **git:** Use VSCode Git extension's Git path ([c47a78a](https://github.com/jackiotyu/git-worktree-manager/commit/c47a78a))
+- **git:** Enhance execBase with Git environment variables ([89f3b72](https://github.com/jackiotyu/git-worktree-manager/commit/89f3b72))
+
+## v3.19.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.18.0...v3.19.0)
+
+### 🚀 Enhancements
+
+- Add $BASE_ROOT variable support and update worktree path template ([e4d5dd8](https://github.com/jackiotyu/git-worktree-manager/commit/e4d5dd8))
+
+### 🤖 CI
+
+- Pnpm cache ([c1f305e](https://github.com/jackiotyu/git-worktree-manager/commit/c1f305e))
+
+## v3.18.0
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.17.2...v3.18.0)
+
+### 🚀 Enhancements
+
+- **worktree:** Enhance file copying with symbolic link support and integrate fast-glob for pattern matching ([#41](https://github.com/jackiotyu/git-worktree-manager/pull/41))
+
+## v3.17.2
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.17.1...v3.17.2)
+
+### 🚀 Enhancements
+
+- **quickpick:** Add move worktree action  in the worktree quick pick menu ([1bfdff7](https://github.com/jackiotyu/git-worktree-manager/commit/1bfdff7))
+
+### 🩹 Fixes
+
+- **treeView:** Refresh favorite data ([4c63bb9](https://github.com/jackiotyu/git-worktree-manager/commit/4c63bb9))
+
+### 🏡 Chore
+
+- **ignore:** Update eslint and vscode ignore files ([3174340](https://github.com/jackiotyu/git-worktree-manager/commit/3174340))
+
+## v3.17.1
+
+[compare changes](https://github.com/jackiotyu/git-worktree-manager/compare/v3.17.0...v3.17.1)
+
+### 🚀 Enhancements
+
+- **worktree:** Normalize branch ref names when creating worktrees ([#38](https://github.com/jackiotyu/git-worktree-manager/pull/38))
+
+### 📦 Build
+
+- **deps:** Update dependencies ([d8ca474](https://github.com/jackiotyu/git-worktree-manager/commit/d8ca474))

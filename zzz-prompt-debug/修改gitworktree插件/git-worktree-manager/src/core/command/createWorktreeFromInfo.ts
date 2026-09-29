@@ -1,0 +1,60 @@
+import * as vscode from 'vscode';
+import { addWorktree } from '@/core/git/addWorktree';
+import { getMainFolder, clearMainFolderCache } from '@/core/git/getMainFolder';
+import { confirmModal } from '@/core/ui/modal';
+import { copyWorktreeFiles } from '@/core/util/copyWorktreeFiles';
+import { postCreateWorktree } from '@/core/hooks/postCreateWorktree';
+import { actionProgressWrapper } from '@/core/ui/progress';
+import { withResolvers } from '@/core/util/promise';
+import type { ICreateWorktreeInfo } from '@/types';
+
+export async function createWorktreeFromInfo(info: ICreateWorktreeInfo) {
+    const { folderPath, name, label, isBranch, cwd, sourceFolder } = info;
+    const confirmCreate = await confirmModal(
+        vscode.l10n.t('Create worktree'),
+        vscode.l10n.t('Create'),
+        vscode.l10n.t('A worktree for {label} {name} will be created under {folder}', {
+            folder: folderPath,
+            label,
+            name,
+        }),
+    );
+    if (!confirmCreate) {
+        return;
+    }
+
+    const waitingCreate = withResolvers<void>();
+    actionProgressWrapper(
+        vscode.l10n.t('Creating worktree {path}', { path: folderPath }),
+        () => waitingCreate.promise,
+        () => {},
+    );
+    const created = await addWorktree(folderPath, name, isBranch, cwd);
+    waitingCreate.resolve();
+    if (!created) {
+        return;
+    }
+
+    clearMainFolderCache(folderPath);
+    const mainFolder = await getMainFolder(folderPath);
+    const copied = sourceFolder ? await copyWorktreeFiles(sourceFolder, folderPath) : true;
+    if (copied) {
+        await postCreateWorktree({
+            worktreePath: folderPath,
+            basePath: mainFolder,
+        });
+    }
+
+    const confirmOpen = await confirmModal(
+        vscode.l10n.t('Open folder'),
+        vscode.l10n.t('Open'),
+        vscode.l10n.t('Open the new worktree in a new window?'),
+    );
+    if (!confirmOpen) {
+        return;
+    }
+    const folderUri = vscode.Uri.file(folderPath);
+    vscode.commands.executeCommand('vscode.openFolder', folderUri, {
+        forceNewWindow: true,
+    });
+}

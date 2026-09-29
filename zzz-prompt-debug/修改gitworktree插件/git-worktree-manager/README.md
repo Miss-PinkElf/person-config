@@ -1,0 +1,144 @@
+
+# Git Worktree Manager
+
+[![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/jackiotyu.git-worktree-manager)](https://marketplace.visualstudio.com/items?itemName=jackiotyu.git-worktree-manager)
+[![Open VSX Downloads](https://shields.io/open-vsx/dt/jackiotyu/git-worktree-manager)](https://open-vsx.org/extension/jackiotyu/git-worktree-manager)
+[![GitHub release](https://img.shields.io/github/v/release/jackiotyu/git-worktree-manager)](https://github.com/jackiotyu/git-worktree-manager/releases)
+[![GitHub Open Issues](https://img.shields.io/github/issues/jackiotyu/git-worktree-manager)](https://github.com/jackiotyu/git-worktree-manager/issues)
+[![License](https://img.shields.io/github/license/jackiotyu/git-worktree-manager)](https://github.com/jackiotyu/git-worktree-manager/blob/main/LICENSE)
+[![GitHub Stars](https://img.shields.io/github/stars/jackiotyu/git-worktree-manager)](https://github.com/jackiotyu/git-worktree-manager)
+
+English | [简体中文](./README.zh-CN.md)
+
+**Manage Git worktrees safely and efficiently inside Visual Studio Code.**  
+Create, switch, and clean up worktrees without losing track of your branches.
+
+<img src="./images/overview.png" width="800" />
+
+## Support 💖
+
+If you enjoy this extension, consider giving it a [star ⭐](https://github.com/jackiotyu/git-worktree-manager) and sharing it on social platforms like [X.com](https://x.com/intent/post?text=Check%20out%20this%20awesome%20VSCode%20extension%20for%20managing%20Git%20worktrees!!%20https%3A%2F%2Fgithub.com%2Fjackiotyu%2Fgit-worktree-manager)—it really helps!
+<table>
+  <tr>
+    <td align="center">
+      <img src="./images/donate/paypal.png" width="200" alt="PayPal Donate"/><br/>
+      <b>PayPal</b>
+    </td>
+    <td align="center">
+      <img src="./images/donate/wechat.png" width="200" alt="WeChat Donate"/><br/>
+      <b>微信</b>
+    </td>
+  </tr>
+</table>
+
+
+## Why Git Worktree Manager? 🌟
+
+Git worktrees make parallel development cleaner by isolating branches into separate directories,  
+but managing them manually can be tedious and error-prone.
+
+Git Worktree Manager brings worktree management into VS Code,  
+helping you create, switch, and clean up worktrees safely while keeping your repository organized.
+
+<video src="./images/manage-multiple-repositories.mp4" controls="controls" width="800" height="450"></video>
+> [Manage multiple repositories effortlessly within VSCode.](./images/manage-multiple-repositories.mp4)
+
+
+### Key Features 🎯
+- **Quick Worktree Switching**: Switch between worktrees using `Ctrl+Shift+R` or the Source Control view. 
+  <video src="https://cdn.jsdelivr.net/gh/jackiotyu/git-worktree-manager@0.4.6/images/switch-branch.mp4" controls="controls" width="800" height="450"></video> 
+  > [Switch branches seamlessly with a single command.](https://cdn.jsdelivr.net/gh/jackiotyu/git-worktree-manager@0.4.6/images/switch-branch.mp4) 
+- **Effortless Worktree Creation**: Create new worktrees without touching the command line. 
+  <video src="https://cdn.jsdelivr.net/gh/jackiotyu/git-worktree-manager@0.4.6/images/create-worktree.mp4" controls="controls" width="800" height="450"></video> 
+  > [Create a new worktree in seconds.](https://cdn.jsdelivr.net/gh/jackiotyu/git-worktree-manager@0.4.6/images/create-worktree.mp4) 
+- **Workspace Integration**: Add worktrees to your VSCode workspace for easy access. 
+  <video src="./images/add-worktrees-to-workspace.mp4" controls="controls" width="800" height="450"></video> 
+  > [Add worktrees to your workspace with a click.](https://cdn.jsdelivr.net/gh/jackiotyu/git-worktree-manager@0.4.6/images/add-worktrees-to-workspace.mp4) 
+- **Favorites Management**: Save frequently used worktrees for quick access. 
+  <video src="./images/drop-to-favorites.mp4" controls="controls" width="800" height="450"></video> 
+  > [Drop worktrees to favorites for instant access.](https://cdn.jsdelivr.net/gh/jackiotyu/git-worktree-manager@0.4.6/images/drop-to-favorites.mp4) 
+- **Worktree Groups**: Organize worktrees into local, collapsible groups without changing Git metadata or repository files.
+- **Copy Untracked Files**: Automatically include untracked files when creating a new worktree.
+- **Multi-Language Support**: Available in English, Simplified Chinese, Traditional Chinese and Japanese.
+- **Customizable Terminal**: Use your preferred terminal (e.g., iTerm on macOS, Git Bash on Windows).
+
+## Getting Started 🚀
+
+1. **Requirements**
+   - git version >= 2.40
+
+1. **Install the Extension**:
+   - Download from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=jackiotyu.git-worktree-manager) or [Open VSX Registry](https://open-vsx.org/extension/jackiotyu/git-worktree-manager).
+   - Or search for "Git Worktree Manager" in VSCode’s Extensions view and install.
+
+1. **Quick Start**:
+   - Open VSCode in a Git repository.
+   - Press `Ctrl+Shift+R` to launch the worktree manager.
+   - Create, switch, or delete worktrees using the intuitive interface.
+
+1. **Example Workflow**:
+   - Create a new worktree: Select “Create Worktree” and specify a branch.
+   - Switch to it instantly via the Source Control view or command palette.
+   - Add it to your VSCode workspace to work on multiple branches side by side.
+   - Save it to favorites for quick access in the future.
+
+## Configuration ⚙️
+
+Customize Git Worktree Manager to fit your workflow:
+
+- **`git-worktree-manager.treeView.toSCM`**  
+  Display worktrees in the Source Control view.
+
+- **`git-worktree-manager.treeView.worktreeDescriptionTemplate`**  
+  Customize the description next to each worktree in the tree view. Handy for spotting stale worktrees at a glance.  
+  Available variables: `$FULL_PATH`, `$BASE_NAME`, `$RELATIVE_PATH`, `$LAST_COMMIT` (relative time of the last commit, e.g. "3 weeks ago"). Hover a worktree to see the absolute timestamp.  
+  **Example:** `"$RELATIVE_PATH · $LAST_COMMIT"`
+
+- **`git-worktree-manager.treeView.worktreeLabelTemplate`**  
+  Customize the label (the bold text) of each worktree in the tree view. Leave empty to keep the default label (the branch or tag name).  
+  Available variables: `$REF_NAME` (branch or tag name), `$BASE_NAME`, `$FULL_PATH`, `$RELATIVE_PATH`, `$LAST_COMMIT`.  
+  **Example:** `"$BASE_NAME ⇄ $REF_NAME"` shows the worktree folder name first, then the branch.
+
+- **`git-worktree-manager.worktreeCopyPatterns`**  
+  Copy matching files and folders from the current folder when creating a worktree. A folder is copied recursively and keeps its internal hierarchy. Relative patterns resolve against the current folder. An absolute path inside the current folder keeps that relative hierarchy; an absolute path outside it is placed at the new worktree root under its final path segment. Each repository can override this in its own `.vscode/settings.json`. Defaults include `.env`, `.vscode/**`, `*.local`, `.codex`, and `.claude`.  
+  **Example:** `[".codex", ".claude", ".env.local"]`
+
+- **`git-worktree-manager.worktreeCopyIgnores`**  
+  Exclude matching files or paths from the copy, even when they match `worktreeCopyPatterns`. Paths inside the current folder are judged relative to that folder. An absolute path outside the current folder is judged relative to that source path's own root.  
+  **Example:** `["**/node_modules/**", "**/dist/**"]`
+
+- **`git-worktree-manager.postCreateCmd`**  
+  Run a command automatically after a worktree is created  
+  (for example, installing dependencies or running setup scripts).  
+  **Example:** `"pnpm install"` or `"echo 'Worktree ready'"`
+
+- **`git-worktree-manager.preRemoveCmd`**  
+  Run a command automatically before a worktree is removed  
+  (for example, tearing down side effects such as a per-worktree database  
+  schema or stopping services).  
+  Runs inside the worktree directory. If the command fails or is cancelled,  
+  the removal is aborted.  
+  **Example:** `"pnpm run worktree:teardown-db"`
+
+- **`terminal.external.windowsExec`**  
+  Set the external terminal on Windows  
+  (e.g. `"C:\\Program Files\\Git\\bin\\bash.exe"` for Git Bash).
+
+- **`terminal.external.osxExec`**  
+  Set the external terminal on macOS  
+  (e.g. `"iTerm.app"`).
+
+## Contributing 🤝
+
+We love contributions! Here’s how to get involved:
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/awesome-idea`).
+3. Commit your changes (`git commit -m "Add awesome idea"`).
+4. Push to the branch (`git push origin feature/awesome-idea`).
+5. Open a Pull Request.
+
+Have ideas? Open an issue with the "enhancement" tag or explore [open issues](https://github.com/jackiotyu/git-worktree-manager/issues).
+
+## License 📜
+
+Distributed under the [MIT License](LICENSE). Use, modify, and share freely!

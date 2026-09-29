@@ -1,0 +1,543 @@
+import * as vscode from 'vscode';
+import { formatTime, parseTimestamp } from '@/core/util/parse';
+import { checkGitValid } from '@/core/git/checkGitValid';
+import { getAllRefList } from '@/core/git/getAllRefList';
+import { Alert } from '@/core/ui/message';
+import {
+    backButton,
+    deleteBranchQuickInputButton,
+    renameBranchQuickInputButton,
+    sortByBranchQuickInputButton,
+    sortByTimeQuickInputButton,
+} from './quickPick.button';
+import { GlobalState } from '@/core/state';
+import { refArgList, HEAD, Commands } from '@/constants';
+import type { RefItem, RefList, RepoRefList, IPickBranch, IPickBranchResolveValue, BranchForWorktree } from '@/types';
+import { getLastCommitHash } from '@/core/git/getLastCommitHash';
+import { withResolvers } from '@/core/util/promise';
+import { createBranchFrom } from '@/core/git/createBranch';
+import { inputNewBranch } from '@/core/ui/inputNewBranch';
+import { comparePath } from '@/core/util/folder';
+import logger from '@/core/log/logger';
+
+type ResolveValue = IPickBranchResolveValue;
+type ResolveType = (value: ResolveValue) => void;
+type RejectType = (value?: any) => void;
+
+type CheckoutType = 'local' | 'remote' | 'tags';
+type BranchSortBy = 'time' | 'name';
+
+interface HandlerArgs {
+    resolve: ResolveType;
+    reject: RejectType;
+    quickPick: vscode.QuickPick<BranchForWorktree>;
+}
+
+interface TriggerButtonHandlerArgs extends HandlerArgs {
+    event: vscode.QuickInputButton;
+    onSortChange: (sortBy: BranchSortBy) => void;
+}
+
+interface HandleTriggerItemButtonArgs {
+    event: vscode.QuickPickItemButtonEvent<BranchForWorktree>;
+}
+
+// Create a new branch
+async function createBranchStrategy({
+    cwd,
+    mainFolder,
+    showSelectRef,
+    quickPick,
+    resolve,
+    refreshItems,
+}: {
+    cwd: string;
+    mainFolder: string;
+    showSelectRef: boolean;
+    quickPick: vscode.QuickPick<BranchForWorktree>;
+    resolve: (value: ResolveValue) => void;
+    refreshItems: () => void;
+}) {
+    let branchItem: IPickBranchResolveValue = {};
+    if (showSelectRef) {
+        // selected ref
+        branchItem = await pickBranch({
+            title: vscode.l10n.t('Create new branch from...'),
+            placeholder: vscode.l10n.t('Choose a reference to create new branch from'),
+            mainFolder: mainFolder,
+            cwd: cwd,
+            showCreate: false,
+        });
+    }
+    if (branchItem === false) {
+        quickPick.dispose();
+        resolve(false);
+        return;
+    }
+    if (!branchItem) {
+        refreshItems();
+        quickPick.show();
+        return;
+    }
+    const branchName = await inputNewBranch(cwd);
+    if (branchName === false) {
+        quickPick.dispose();
+        resolve(false);
+        return;
+    }
+    if (!branchName) {
+        refreshItems();
+        quickPick.show();
+        return;
+    }
+    await createBranchFrom(cwd, branchName, branchItem.branch || branchItem.hash);
+    const hash = await getLastCommitHash(cwd, true);
+    resolve({ branch: branchName, hash });
+    quickPick.hide();
+    quickPick.dispose();
+}
+
+function isSelectCreateBranch(item: vscode.QuickPickItem) {
+    return [createNewBranchItem, createNewBranchFromItem].includes(item);
+}
+
+async function handleAccept({
+    resolve,
+    reject,
+    quickPick,
+    cwd,
+    mainFolder,
+    refreshItems,
+}: HandlerArgs & { cwd: string; mainFolder: string; refreshItems: () => void }) {
+    try {
+        const selected = quickPick.selectedItems[0];
+        if (isSelectCreateBranch(selected)) {
+            await createBranchStrategy({
+                cwd,
+                mainFolder,
+                showSelectRef: selected === createNewBranchFromItem,
+                quickPick,
+                resolve,
+                refreshItems,
+            });
+            return;
+        }
+        resolve(selected);
+        quickPick.hide();
+        quickPick.dispose();
+    } catch (error) {
+        vscode.window.showErrorMessage(`${error}`);
+        reject(error);
+    }
+}
+
+function handleHide({ resolve, quickPick }: HandlerArgs) {
+    const selected = quickPick.selectedItems[0];
+    if (isSelectCreateBranch(selected)) {
+        return;
+    }
+    resolve(false);
+    quickPick.dispose();
+}
+
+function handleTriggerButton({ resolve, quickPick, event, onSortChange }: TriggerButtonHandlerArgs) {
+    if (event === backButton) {
+        resolve();
+        quickPick.hide();
+        return;
+    }
+    if (event === sortByBranchQuickInputButton) {
+        onSortChange('name');
+        return;
+    }
+    if (event === sortByTimeQuickInputButton) {
+        onSortChange('time');
+    }
+}
+
+function handleTriggerItemButton({ event }: HandleTriggerItemButtonArgs) {
+    if (event.button === deleteBranchQuickInputButton) {
+        vscode.commands.executeCommand(Commands.deleteBranch, event.item);
+    } else if (event.button === renameBranchQuickInputButton) {
+        vscode.commands.executeCommand(Commands.renameBranch, event.item);
+    }
+}
+
+const mapRefList = (allRefList: RefList) => {
+    const branchList: RefList = [];
+    const remoteBranchList: RefList = [];
+    const tagList: RefList = [];
+    allRefList.forEach((item) => {
+        if (item.refname.startsWith('refs/heads/')) {
+            branchList.push(item);
+        } else if (item.refname.startsWith('refs/remotes/') && !item.refname.endsWith('/HEAD')) {
+            remoteBranchList.push(item);
+        } else if (item.refname.startsWith('refs/tags/')) {
+            tagList.push(item);
+        }
+    });
+    return {
+        branchList,
+        remoteBranchList,
+        tagList,
+    };
+};
+
+const getRefList = async (cwd?: string) => {
+    // 使用 git for-each-ref 获取所有分支和tag
+    const allRefList = await getAllRefList([...refArgList], cwd);
+    return mapRefList(allRefList);
+};
+
+const getRefSortName = (item: RefItem) => item['refname:short'];
+const getRefSortDate = (item: RefItem) => item['*authordate'] || item.authordate || '';
+
+const sortRefList = (list: RefList, sortBy: BranchSortBy): RefList => {
+    const sorted = [...list];
+    if (sortBy === 'name') {
+        sorted.sort((a, b) => getRefSortName(a).localeCompare(getRefSortName(b)));
+    } else {
+        sorted.sort((a, b) => parseTimestamp(getRefSortDate(b)) - parseTimestamp(getRefSortDate(a)));
+    }
+    return sorted;
+};
+
+const getSortButton = (sortBy: BranchSortBy) =>
+    sortBy === 'name' ? sortByTimeQuickInputButton : sortByBranchQuickInputButton;
+
+/**
+ * Get normalized "git.checkoutType" setting.
+ * @see https://github.com/microsoft/vscode/blob/1.107.1/extensions/git/src/commands.ts#L392
+ */
+const getCheckoutTypes = () => {
+    const defaultCheckoutTypes: CheckoutType[] = ['local', 'remote', 'tags'];
+    const config = vscode.workspace.getConfiguration('git');
+    const checkoutTypeConfig = config.get<string | string[]>('checkoutType');
+
+    let checkoutTypes: string[];
+
+    if (checkoutTypeConfig === 'all' || !checkoutTypeConfig || !checkoutTypeConfig.length) {
+        checkoutTypes = defaultCheckoutTypes;
+    } else if (typeof checkoutTypeConfig === 'string') {
+        checkoutTypes = [checkoutTypeConfig];
+    } else {
+        checkoutTypes = checkoutTypeConfig;
+    }
+
+    checkoutTypes = checkoutTypes.filter((type) => defaultCheckoutTypes.includes(type as CheckoutType));
+    if (!checkoutTypes.length) {
+        return defaultCheckoutTypes;
+    }
+
+    return checkoutTypes as CheckoutType[];
+};
+
+const buildBranchDesc = (hash: string, authordate: string) =>
+    `$(git-commit) ${hash} $(circle-small-filled) ${formatTime(authordate)}`;
+const buildWorktreeBranchDesc = (hash: string, authordate: string) =>
+    `$(git-commit) ${hash} $(circle-small-filled) ${formatTime(authordate)}`;
+const buildRemoteBranchDesc = (hash: string, authordate: string) =>
+    `${vscode.l10n.t('remote branch')} $(git-commit) ${hash} $(circle-small-filled) ${formatTime(authordate)}`;
+const buildTagDesc = (hash: string, authordate: string) =>
+    `${vscode.l10n.t('tag')} $(git-commit) ${hash} $(circle-small-filled) ${formatTime(authordate)}`;
+const buildCommitDesc = (commitRef: RefItem): string | undefined => {
+    const showReferenceDetails = vscode.workspace.getConfiguration('git').get('showReferenceDetails', false);
+    const authorName = commitRef.authorname || commitRef['*authorname'] || commitRef.taggername;
+    const subject = commitRef.subject || commitRef['*subject'];
+
+    if (!showReferenceDetails || !authorName) return void 0;
+    return `$(blank)  ${authorName} $(circle-small-filled) ${subject}`;
+};
+
+const mapBranchItemButtons = (): vscode.QuickInputButton[] => {
+    const buttons: vscode.QuickInputButton[] = [
+        { button: deleteBranchQuickInputButton, show: deleteBranchQuickInputButton.enabled },
+        { button: renameBranchQuickInputButton, show: renameBranchQuickInputButton.enabled },
+    ]
+        .filter((i) => i.show)
+        .map((i) => i.button);
+    return buttons;
+};
+
+const mapBranchItems = (branchList: RefList, mainFolder: string): vscode.QuickPickItem[] => {
+    const buttons: vscode.QuickInputButton[] = mapBranchItemButtons();
+    const branchItems: BranchForWorktree[] = [
+        {
+            label: vscode.l10n.t('branch'),
+            kind: vscode.QuickPickItemKind.Separator,
+        },
+        ...branchList.map<BranchForWorktree>((item) => {
+            const shortRefName = item['refname'].replace('refs/heads/', '');
+            return {
+                label: shortRefName,
+                description: buildBranchDesc(item['objectname:short'], item['authordate']),
+                iconPath: new vscode.ThemeIcon('source-control'),
+                hash: item['objectname:short'],
+                branch: shortRefName,
+                buttons,
+                mainFolder,
+                detail: buildCommitDesc(item),
+            };
+        }),
+    ];
+    return branchItems;
+};
+
+const mapWorktreeItemButtons = (): vscode.QuickInputButton[] => {
+    const buttons: vscode.QuickInputButton[] = [
+        { button: renameBranchQuickInputButton, show: renameBranchQuickInputButton.enabled },
+    ]
+        .filter((i) => i.show)
+        .map((i) => i.button);
+    return buttons;
+};
+const mapWorktreeBranchItems = (branchList: RefList, mainFolder: string, defaultBranch?: RefItem) => {
+    const worktreeBranchItems: BranchForWorktree[] = [];
+    worktreeBranchItems.push({
+        label: 'worktree',
+        kind: vscode.QuickPickItemKind.Separator,
+    });
+    defaultBranch &&
+        worktreeBranchItems.push({
+            label: `HEAD ${defaultBranch['objectname:short'] || ''}`,
+            description: vscode.l10n.t('Current commit hash'),
+            iconPath: new vscode.ThemeIcon('git-commit'),
+            hash: defaultBranch['objectname:short'],
+            detail: buildCommitDesc(defaultBranch),
+        });
+    const buttons: vscode.QuickInputButton[] = mapWorktreeItemButtons();
+    worktreeBranchItems.push(
+        // worktree branch list
+        ...branchList.map((item) => {
+            const shortName = item['refname'].replace('refs/heads/', '');
+            return {
+                label: shortName,
+                description: buildWorktreeBranchDesc(item['objectname:short'], item['authordate']),
+                iconPath:
+                    item.HEAD === HEAD.current ? new vscode.ThemeIcon('check') : new vscode.ThemeIcon('source-control'),
+                hash: item['objectname:short'],
+                branch: shortName,
+                buttons,
+                mainFolder,
+                detail: buildCommitDesc(item),
+            };
+        }),
+    );
+    return worktreeBranchItems;
+};
+
+const mapRemoteBranchItems = (remoteBranchList: RefList) => {
+    const remoteBranchItems: BranchForWorktree[] = [
+        {
+            label: vscode.l10n.t('remote branch'),
+            kind: vscode.QuickPickItemKind.Separator,
+        },
+        ...remoteBranchList.map<BranchForWorktree>((item) => {
+            return {
+                label: item['refname:short'],
+                iconPath: new vscode.ThemeIcon('cloud'),
+                description: buildRemoteBranchDesc(item['objectname:short'], item['authordate']),
+                branch: item['refname:short'],
+                detail: buildCommitDesc(item),
+            };
+        }),
+    ];
+    return remoteBranchItems;
+};
+
+const mapTagItems = (tagList: RefList) => {
+    const tagItems: BranchForWorktree[] = [
+        {
+            label: vscode.l10n.t('tag'),
+            kind: vscode.QuickPickItemKind.Separator,
+        },
+        ...tagList.map<BranchForWorktree>((item) => {
+            const hash = (item['*objectname'] || item['objectname:short']).slice(0, 8);
+            const authordate = item['*authordate'] || item['authordate'];
+            return {
+                label: item['refname'].replace('refs/tags/', ''),
+                iconPath: new vscode.ThemeIcon('tag'),
+                description: buildTagDesc(hash, authordate),
+                hash,
+                detail: buildCommitDesc(item),
+            };
+        }),
+    ];
+    return tagItems;
+};
+
+const createNewBranchItem: vscode.QuickPickItem = {
+    label: `$(plus) ${vscode.l10n.t('Create new branch...')}`,
+};
+const createNewBranchFromItem: vscode.QuickPickItem = {
+    label: `$(plus) ${vscode.l10n.t('Create new branch from...')}`,
+};
+
+const getPreItems = (showCreate: boolean): vscode.QuickPickItem[] => {
+    if (!showCreate) return [];
+    return [createNewBranchItem, createNewBranchFromItem, { label: '', kind: vscode.QuickPickItemKind.Separator }];
+};
+
+const mapRefItems = ({
+    branchList,
+    remoteBranchList,
+    tagList,
+    showCreate,
+    mainFolder,
+    checkoutTypes,
+    sortBy,
+}: {
+    branchList: RefList;
+    remoteBranchList: RefList;
+    tagList: RefList;
+    showCreate: boolean;
+    mainFolder: string;
+    checkoutTypes: CheckoutType[];
+    sortBy: BranchSortBy;
+}) => {
+    let defaultBranch: RefItem | undefined = void 0;
+    const branchItems: RefList = [];
+    const worktreeItems: RefList = [];
+    branchList.forEach((item) => {
+        if (item.HEAD === HEAD.current) defaultBranch = item;
+        if (item.worktreepath) worktreeItems.push(item);
+        else branchItems.push(item);
+    });
+
+    const items = [
+        ...getPreItems(showCreate),
+        ...mapWorktreeBranchItems(sortRefList(worktreeItems, sortBy), mainFolder, defaultBranch),
+    ];
+    const checkoutTypeItemsGetters = {
+        local: () => mapBranchItems(sortRefList(branchItems, sortBy), mainFolder),
+        remote: () => mapRemoteBranchItems(sortRefList(remoteBranchList, sortBy)),
+        tags: () => mapTagItems(sortRefList(tagList, sortBy)),
+    };
+    // 根据配置的 checkoutType 顺序添加对应的 items
+    checkoutTypes.forEach((type) => {
+        const getter = checkoutTypeItemsGetters[type];
+        if (getter) {
+            items.push(...getter());
+        }
+    });
+
+    return items;
+};
+
+const getRefListCache = async (mainFolder: string, cwd: string) => {
+    const refList = GlobalState.get(`global.gitRepo.refList.${mainFolder}`, {
+        branchList: [],
+        remoteBranchList: [],
+        tagList: [],
+    });
+    if (!refList.branchList.length && !refList.remoteBranchList.length && !refList.tagList.length) {
+        return false;
+    }
+    refList.branchList.some((item) => {
+        if (!comparePath(item['worktreepath'], cwd)) return false;
+        item.HEAD = HEAD.current;
+        return true;
+    });
+    return refList;
+};
+
+const updateRefListCache = (mainFolder: string, refList: RepoRefList) => {
+    const { branchList, remoteBranchList, tagList } = refList;
+    const branchItems = branchList.map((item) => {
+        if (item.HEAD !== HEAD.current) return item;
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        return { ...item, HEAD: ' ' };
+    });
+    // 添加缓存
+    GlobalState.update(`global.gitRepo.refList.${mainFolder}`, {
+        branchList: branchItems,
+        remoteBranchList,
+        tagList,
+    });
+};
+
+const updateQuickItems = async ({
+    mainFolder,
+    cwd,
+    showCreate,
+    quickPick,
+    sortBy,
+}: {
+    mainFolder: string;
+    cwd: string;
+    showCreate: boolean;
+    quickPick: vscode.QuickPick<BranchForWorktree>;
+    sortBy: BranchSortBy;
+}) => {
+    // Read cache
+    const refList = await getRefListCache(mainFolder, cwd);
+    const checkoutTypes = getCheckoutTypes();
+    if (refList) quickPick.items = mapRefItems({ ...refList, showCreate, mainFolder, checkoutTypes, sortBy });
+};
+
+export const pickBranch: IPickBranch = async ({
+    title,
+    placeholder,
+    mainFolder,
+    cwd,
+    step,
+    totalSteps,
+    showCreate,
+}) => {
+    const { resolve, reject, promise } = withResolvers<ResolveValue>();
+    try {
+        const isValidGit = await checkGitValid(cwd);
+        if (!isValidGit) {
+            Alert.showErrorMessage(vscode.l10n.t('The folder is not a valid Git repository'));
+            return;
+        }
+        const quickPick = vscode.window.createQuickPick();
+        const sortState = { sortBy: 'name' as BranchSortBy };
+        const refreshItems = () =>
+            updateQuickItems({ mainFolder, cwd, showCreate, quickPick, sortBy: sortState.sortBy });
+        const updateButtons = () => {
+            quickPick.buttons = [backButton, getSortButton(sortState.sortBy)];
+        };
+        quickPick.title = title;
+        quickPick.placeholder = placeholder;
+        quickPick.canSelectMany = false;
+        updateButtons();
+        quickPick.step = step;
+        quickPick.totalSteps = totalSteps;
+        quickPick.onDidAccept(() => handleAccept({ resolve, reject, quickPick, cwd, mainFolder, refreshItems }));
+        quickPick.onDidHide(() => handleHide({ resolve, reject, quickPick }));
+        quickPick.onDidTriggerButton((event) =>
+            handleTriggerButton({
+                resolve,
+                reject,
+                event,
+                quickPick,
+                onSortChange: (sortBy) => {
+                    sortState.sortBy = sortBy;
+                    updateButtons();
+                    refreshItems();
+                },
+            }),
+        );
+        quickPick.onDidTriggerItemButton((event) => handleTriggerItemButton({ event }));
+        quickPick.show();
+        quickPick.busy = true;
+        refreshItems();
+        const { branchList, remoteBranchList, tagList } = await getRefList(cwd);
+        if (!branchList) {
+            quickPick.hide();
+            return;
+        }
+        updateRefListCache(mainFolder, {
+            branchList,
+            remoteBranchList,
+            tagList,
+        });
+        refreshItems();
+        quickPick.busy = false;
+        return await promise;
+    } catch (error) {
+        logger.error(error);
+        reject(error);
+    }
+};

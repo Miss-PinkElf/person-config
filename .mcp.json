@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "deepseek-web": {
+      "type": "stdio",
+      "command": "/Users/mobius/.nvm/versions/node/v24.13.1/bin/node",
+      "args": [
+        "/Users/mobius/Documents/111AAA-code/person-config/mcp/deepseek-fetch-search/index.js"
+      ],
+      "env": {}
+    }
+  }
+}

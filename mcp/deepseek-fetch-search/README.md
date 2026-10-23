@@ -201,6 +201,34 @@ claude mcp add --scope project deepseek-web -- \
 
 **注册后需要重启 Claude Code** 才会加载新服务。可用 `/mcp` 查看连接状态。
 
+### 方式三：安装到 `~/.claude/mcp`（全局使用，推荐）
+
+直接把仓库里的路径注册给用户级，服务本身仍依赖仓库目录——移动或删除仓库就会失效。如果希望全局使用且不依赖具体项目，把服务代码复制一份到用户目录再注册：
+
+```bash
+# 1. 复制服务代码（含 .env 与 node_modules）
+mkdir -p ~/.claude/mcp
+rsync -a /Users/mobius/Documents/111AAA-code/person-config/mcp/deepseek-fetch-search/ \
+  ~/.claude/mcp/deepseek-fetch-search/
+
+# 2. 权限收紧（.env 含密钥）
+chmod 600 ~/.claude/mcp/deepseek-fetch-search/.env
+
+# 3. 注册到用户级，指向新路径
+claude mcp add --scope user deepseek-web -- \
+  $(which node) \
+  ~/.claude/mcp/deepseek-fetch-search/index.js
+```
+
+> **两份代码会分叉**：项目里的代码受 git 管理，`~/.claude/mcp/` 里的不受。以后在仓库改了 `index.js` 等文件，需要手动同步过去：
+>
+> ```bash
+> rsync -a /Users/mobius/Documents/111AAA-code/person-config/mcp/deepseek-fetch-search/ \
+>   ~/.claude/mcp/deepseek-fetch-search/
+> ```
+>
+> 同步后重启 Claude Code（或在 `/mcp` 中重连）才会生效。`rsync` 默认不会删除目标端多余的文件，如需严格一致可加 `--delete`；但请确认源端 `.env` 存在，否则目标端的密钥文件也会被删除。
+
 ### 验证是否生效
 
 重启后直接对 Claude 说：
